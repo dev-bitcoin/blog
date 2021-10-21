@@ -1,0 +1,58 @@
+:root {
+    --body-bg: var(--light);
+    --body-color: var(--dark);
+    --article-bg: #00000007;
+}
+
+html.light {
+    --body-bg: var(--light);
+    --body-color: var(--dark);
+    --article-bg: #00000007;
+}
+html.dark {
+    --body-bg: var(--dark);
+    --body-color: var(--light);
+    --article-bg: #ffffff07;
+}
+
+.dark-light-mode-symbol {
+  font-size: 1.4em;
+  color: var(--body-color);
+}
+
+html.dark pre code {
+  color: var(--pink);
+}
+html.dark .image-to-invert {
+    filter: invert(100%);
+}
+html.dark a {
+  color: var(--orange);
+}
+
+body {
+    font-family: sans-serif;
+    background: var(--body-bg);
+    color: var(--body-color);
+}
+
+.content-text p {
+    font-size: 1em;
+    text-align: justify;
+}
+
+article, .card, nav {
+  background: var(--article-bg);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Ubuntu";
+    font-weight: 600;
+}
+
+.twitter-tweet-rendered {
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+}
+
