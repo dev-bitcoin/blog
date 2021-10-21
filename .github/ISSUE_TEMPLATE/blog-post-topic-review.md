@@ -2,7 +2,7 @@
 name: Blog post topic review
 about: Get feedback on your blog post topic. Does it fit for this blog?
 title: "[Topic Review]"
-labels: Topic Review
+labels: ''
 assignees: ''
 
 ---
