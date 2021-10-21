@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   height="64"
+   width="64"
+   version="1.1"
+   id="svg839"
+   sodipodi:docname="logo.svg"
+   inkscape:version="1.0.2 (e86c870879, 2021-01-15)"
+   inkscape:export-filename="/home/b10c/git/bitcoin-dev-blog/static/logo-64.png"
+   inkscape:export-xdpi="95.999992"
+   inkscape:export-ydpi="95.999992">
+  <metadata
+     id="metadata845">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs843" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="3436"
+     inkscape:window-height="1420"
+     id="namedview841"
+     showgrid="false"
+     inkscape:zoom="16"
+     inkscape:cx="36.113331"
+     inkscape:cy="36.689663"
+     inkscape:window-x="0"
+     inkscape:window-y="18"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="g837"
+     inkscape:document-rotation="0" />
+  <g
+     transform="translate(0.00630876,-0.00301984)"
+     id="g837">
+    <g
+       id="g920"
+       transform="translate(-1.61982,-0.42002267)">
+      <g
+         id="g910"
+         transform="translate(0,4)">
+        <path
+           fill="#FFF"
+           d="m 18.992394,17.742452 c 0.07934,-1.660703 -1.255179,-2.414222 -3.017691,-2.828709 l 0.328435,-2.271973 -1.382945,-0.1998 -0.31974,2.212098 c -0.363559,-0.05252 -0.736217,-0.09906 -1.106494,-0.145076 l 0.322146,-2.226702 -1.382178,-0.199876 -0.328896,2.271244 c -0.300295,-0.03717 -0.595133,-0.07412 -0.881868,-0.115388 l 7.88e-4,-0.0071 -1.9073185,-0.27642 -0.2131829,1.477062 c 0,0 1.0240574,0.128181 1.0043634,0.144534 0.560141,0.08116 0.695438,0.432713 0.707895,0.721003 l -0.374095,2.588262 c 0.03863,0.0058 0.08882,0.0147 0.144783,0.03077 -0.04608,-0.0066 -0.09535,-0.01404 -0.146118,-0.02094 l -0.5245802,3.625826 c -0.050068,0.172737 -0.1943351,0.438835 -0.5857949,0.382932 0.015432,0.01823 -1.0052436,-0.14561 -1.0052436,-0.14561 l -0.5135582,1.611841 1.799692,0.260131 c 0.3348506,0.04882 0.6635599,0.10214 0.9867669,0.150971 l -0.331634,2.297913 1.381417,0.199954 0.328673,-2.27355 c 0.378171,0.06268 0.744808,0.118765 1.103217,0.170248 l -0.327792,2.262981 1.382945,0.199799 0.332062,-2.293688 c 2.344268,0.202745 4.056223,-0.147717 4.573953,-2.301817 0.417324,-1.734464 -0.296259,-2.638481 -1.570219,-3.146222 0.860826,-0.292356 1.466121,-0.93925 1.522162,-2.154736 z m -2.645155,4.633575 c -0.247504,1.717294 -3.159536,1.096874 -4.09691,0.962258 l 0.440525,-3.04444 c 0.937489,0.135769 3.91545,0.291136 3.656385,2.082182 z m -0.02216,-4.388352 c -0.226308,1.562227 -2.652094,1.025388 -3.432785,0.912579 l 0.399295,-2.761202 c 0.780691,0.112809 3.268908,0.219103 3.03349,1.848623 z"
+           id="path835"
+           style="fill:#000000;fill-opacity:1;stroke-width:0.386167" />
+        <text
+           xml:space="preserve"
+           style="font-weight:bold;font-size:13.3333px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
+           x="19.160442"
+           y="25.627151"
+           id="text869"><tspan
+             sodipodi:role="line"
+             id="tspan867"
+             x="19.160442"
+             y="25.627151">itcoin</tspan></text>
+      </g>
+      <text
+         xml:space="preserve"
+         style="font-weight:bold;font-size:13.3333px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
+         x="14.197603"
+         y="41.042477"
+         id="text869-3"><tspan
+           sodipodi:role="line"
+           id="tspan867-6"
+           x="14.197603"
+           y="41.042477">dev</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-weight:bold;font-size:13.3333px;line-height:1.25;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold'"
+         x="19.163111"
+         y="52.464439"
+         id="text869-7"><tspan
+           sodipodi:role="line"
+           id="tspan867-5"
+           x="19.163111"
+           y="52.464439">blog</tspan></text>
+    </g>
+  </g>
+</svg>

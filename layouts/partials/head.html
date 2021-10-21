@@ -1,0 +1,28 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="description" content="{{.Description}}">
+    <title>{{.Title}}</title>
+
+    {{ template "_internal/opengraph.html" . }} {{ template "_internal/twitter_cards.html" . }}
+
+    {{ range .AlternativeOutputFormats -}}
+      {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
+    {{ end -}}
+
+    <link rel="stylesheet" href="/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/syntax.css">
+    <link rel="stylesheet" href="/css/index.css">
+    <link rel="shortcut icon" href="/favicon.png" type="image/png">
+    <link rel="icon" href="/favicon.png" type="image/png">
+
+    {{ if not .Site.IsServer }}
+    <!-- self-hosted, privacy friendly, and GDPR compliant visitor stats -->
+    <script async defer
+      data-website-id="dfc2acc6-9237-4a34-bc2b-37967cb79a4c"
+      src="https://umami.b10c.me/umami.js"></script>
+    {{ end }}
+
+  </head>

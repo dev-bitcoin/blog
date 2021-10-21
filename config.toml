@@ -1,3 +1,28 @@
-baseURL = "http://example.org/"
+baseURL = "https://bitcoin-dev.blog"
 languageCode = "en-us"
-title = "My New Hugo Site"
+title = "bitcoin-dev blog"
+
+[taxonomies]
+  tag = 'tags'
+
+
+[privacy]
+  [privacy.disqus]
+    disable = true
+  [privacy.googleAnalytics]
+    disable = true
+  [privacy.instagram]
+    disable = true
+
+  [privacy.twitter]
+    # Do-Not-Track
+    enableDNT = true
+
+  [privacy.vimeo]
+    # Do-Not-Track
+    enableDNT = true
+
+  [privacy.youtube]
+    # YouTube won’t store information about visitors on your website unless the user plays the embedded video.
+    privacyEnhanced = true
+

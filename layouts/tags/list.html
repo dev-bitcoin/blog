@@ -1,0 +1,13 @@
+{{ define "main" }}
+<article class="card border-0 rounded shadow-sm mb-5">
+    <div class="card-body">
+        <div class="card-text mx-lg-2 mx-md-1 text-justify">
+            <h2 class="mb-4">Posts tagged with "{{.Title}}"</h2>
+            {{.Content}}
+            {{ range .Pages }}
+              {{ partial "card.html" . }}
+            {{ end }}
+        </div>
+    </div>
+</article>
+{{ end }}

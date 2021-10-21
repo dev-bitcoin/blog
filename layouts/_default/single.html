@@ -1,0 +1,74 @@
+{{ define "main" }}
+<article class="card py-2 border-0 rounded shadow-sm">
+    <div class="card-body">
+        <div class="card-text px-lg-5 mx-lg-5 px-md-3 mx-md-3">
+            <header class="mt-lg-4 mb-3">
+                <span class="small">
+                </span>
+                <h2>
+                    {{ .Title }}
+                </h2>
+                <h5>{{ .Params.Subtitle }}</h5>
+                <span>
+                  published {{ .PublishDate.Format "January 2, 2006" }}
+                </span>
+                <span>
+                    by
+                    {{ range $index, $author := .Params.authors }}
+                      {{ if (gt $index 0) }} and {{ end }}
+                      {{ .name }}
+                      {{ if isset . "github" }}
+                        <a href="https://github.com/{{ .github }}" class="mx-1">
+                          <img src="/img/footer/github.svg" alt="link to @{{ .github }} on GitHub" height=18 class="d-inline-block align-text-top">
+                        </a>
+                      {{ end }}
+                      {{ if isset . "twitter" }}
+                        <a href="https://twitter.com/{{ .twitter }}" class="mr-1">
+                          <img src="/img/footer/twitter.svg" alt="link to @{{ .twitter }} on Twitter" height=18 class="d-inline-block align-text-top">
+                        </a>
+                      {{ end }}
+                    {{ end }}
+                </span>
+                </br>
+                <span>
+                  {{ if isset .Params "tags" }}
+                  tagged with
+                  {{ range $index, $tag := .Params.tags}}
+                    {{ if (gt $index 0) }}, {{ end }}
+                    <a href="/tags/{{ . | urlize }}">
+                      {{ . }}
+                    </a>
+                  {{ end }}
+                  {{ end }}
+                </span>
+            </header>
+            <hr>
+            <section class="content-text">
+                {{ .Content }}
+            </section>
+
+            <section>
+                <noscript>
+                    <div class="alert alert-warning" role="alert">
+                      Enable JavaScript to view comments.
+                      Comments are hosted on GitHub with <a href="https://utteranc.es/">utteranc.es</a>.
+                    </div>
+                </noscript>
+                <script src="https://utteranc.es/client.js"
+                  repo="dev-bitcoin/blog-comments"
+                  issue-term="title"
+                  label="Comments"
+                  theme="preferred-color-scheme"
+                  crossorigin="anonymous"
+                  async>
+              </script>
+            </section>
+            <section class="text-muted small">
+               All text and images in this work are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>
+               <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/80x15.png" /></a>
+            </section>
+        </div>
+    </div>
+</article>
+{{ partial "prev-next.html" . }}
+{{ end }}

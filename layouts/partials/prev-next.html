@@ -1,0 +1,27 @@
+<section>
+    <div class="row"> 
+
+        {{ if (.NextInSection) }}
+        <div class="col-lg">
+            <h4 class="mt-4">Next</h4>
+            {{ if and (.PrevInSection) (.NextInSection) }}
+                {{ partial "card-small.html" .NextInSection }}
+            {{ else }}
+                {{ partial "card.html" .NextInSection }}
+            {{ end }}
+        </div>
+        {{ end }}
+
+        {{ if (.PrevInSection) }}
+        <div class="col-lg">
+            <h4 class="mt-4">Previous</h4>
+            {{ if and (.PrevInSection) (.NextInSection) }}
+                {{ partial "card-small.html" .PrevInSection }}
+            {{ else }}
+                {{ partial "card.html" .PrevInSection }}
+            {{ end }}
+        </div>
+        {{ end }}
+
+    </div>
+</section>

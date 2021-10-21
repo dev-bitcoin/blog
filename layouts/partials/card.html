@@ -1,0 +1,26 @@
+<div class="card mb-4 border-0 rounded shadow-sm">
+  <div class="row no-gutters">
+    {{ if .Params.images }}
+      <div class="col-md-4 shadow-sm">
+        <img src="{{index ( .Params.images ) 0}}" style="object-fit: cover; height: 100%;" class="card-img" alt="Image for {{.Title}}">
+        <a class="stretched-link umami--click--card-img-{{.Title | urlize}}" href="{{.RelPermalink}}"></a>
+      </div>
+      <hr>
+    {{ end }}
+    <div class="col-md-8">
+      <div class="card-body">
+        {{ if isset . "PublishDate" }}
+          <small class="text-muted">
+            {{ .PublishDate.Format "January 2, 2006" }}
+          </small>
+        {{ end }}
+        <h4 class="card-title">{{.Title}}
+        </h4>
+        <p class="card-text">
+          {{ truncate 300 .Summary }}
+        </p>
+      </div>
+      <a class="stretched-link umami--click--card-text-{{.Title | urlize}}" href="{{.RelPermalink}}"></a>
+    </div>
+  </div>
+</div>

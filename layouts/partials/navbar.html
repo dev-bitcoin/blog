@@ -1,0 +1,63 @@
+<nav class="navbar container border-0 rounded-bottom shadow-sm mb-4">
+  <a class="navbar-brand" href="/">
+    <img src="/logo-512.png" width="64" height="64" class="d-inline-block align-middle image-to-invert" alt="bitcoin-dev blog logo">
+  </a>
+  <div class="mr-auto">
+    <div>
+      <h1 class="mb-0">bitcoin-dev blog</h1>
+    </div>
+    <div>
+      <span>A place for Bitcoin developers to share their projects.</span>
+    </div>
+  </div>
+  <div class="ml-auto">
+    <div class="btn-group-toggle" data-toggle="buttons">
+      <label class="btn ">
+      <input type="checkbox" id="light-dark-mode-switch">
+        <span class="dark-light-mode-symbol">🌣</span>
+        <noscript>
+          requires JS
+        </noscript>
+      </label>
+    </div>
+    <script>
+      const MODE_KEY = "mode"
+      var html = document.querySelector("html")
+      var darkmodeSwitch = document.getElementById("light-dark-mode-switch")
+
+      function set_dark_mode() {
+        darkmodeSwitch.checked = true;
+        html.classList.add("dark")
+        html.classList.remove("light")
+        localStorage.setItem(MODE_KEY, true);
+      }
+
+      function set_light_mode() {
+        darkmodeSwitch.checked = false;
+        html.classList.add("light")
+        html.classList.remove("dark")
+        localStorage.setItem(MODE_KEY, false);
+      }
+
+      let storedMode = localStorage.getItem(MODE_KEY) == "true" ? true : false;
+      let perfersDarkmode = window.matchMedia('(prefers-color-scheme: dark)').matches
+      if(storedMode) {
+        console.log("Dark-mode set in localStorage.");
+        set_dark_mode();
+      } else if (perfersDarkmode) {
+        console.log("User prefers dark-mode.");
+        set_dark_mode();
+      } else {
+        set_light_mode();
+      }
+
+      darkmodeSwitch.addEventListener('change', (event) => {
+        if (event.currentTarget.checked) {
+          set_dark_mode();
+        } else {
+          set_light_mode();
+        }
+      })
+    </script>
+  </div>
+</nav>
