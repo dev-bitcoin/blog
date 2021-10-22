@@ -1,6 +1,8 @@
 baseURL = "https://bitcoin-dev.blog"
 languageCode = "en-us"
 title = "bitcoin-dev blog"
+images = ["/logo-large.png"]
+description = "Blog posts by Bitcoin developers on their projects."
 
 [taxonomies]
   tag = 'tags'
