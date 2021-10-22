@@ -9,6 +9,7 @@
   - These files contain a few lines of YAML front matter with, for example, the title and author information.
     - If you have [`hugo`] installed on your system, you can use `hugo new blog/blog-post-title.md` to create a new markdown file from a [template].
     - If you don't have [`hugo`] installed on your system, you can copy an existing blog post, delete the content, and edit the front matter.
+  - There is an example blog post showing how to format text and how to embed code, images, and videos. The post is not listed, but can be found [here][example-post] and the [source here][example-source].
 3. We strive for high-quality blog posts.
   - The post doesn't have to be perfect but should contain very few formatting, spelling, grammar, or technical mistakes. Try asking other people to review your content first.
   - Your post should arouse interest in the project or topic.
@@ -26,5 +27,7 @@
 [topic-review issue]: https://github.com/dev-bitcoin/blog/issues/new?template=blog-post-topic-review.md&title=%5BTopic+Review%5D
 [`hugo`]: https://gohugo.io/
 [template]: https://github.com/dev-bitcoin/blog/blob/main/archetypes/blog.md
+[example-post]: https://bitcoin-dev.blog/blog/example-post/
+[example-source]: https://github.com/dev-bitcoin/blog/blob/main/content/blog/example-post.md?plain=1
 [dev-bitcoin/blog repo]: https://github.com/dev-bitcoin/blog
 
