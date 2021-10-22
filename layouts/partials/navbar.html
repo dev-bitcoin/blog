@@ -30,11 +30,12 @@
         localStorage.setItem(MODE_KEY, false);
       }
 
-      let storedMode = localStorage.getItem(MODE_KEY) == "true" ? true : false;
+      let isModeStored = localStorage.getItem(MODE_KEY) === null ? false : true;
       let perfersDarkmode = window.matchMedia('(prefers-color-scheme: dark)').matches
-      if(storedMode) {
-        console.log("Dark-mode set in localStorage.");
-        set_dark_mode();
+      if(isModeStored) {
+        let isDarkModeStored = localStorage.getItem(MODE_KEY) == "true" ? true : false;
+        console.log("Dark-mode set to", isDarkModeStored, "in localStorage.");
+        if(isDarkModeStored) { set_dark_mode() } else { set_light_mode(); }
       } else if (perfersDarkmode) {
         console.log("User prefers dark-mode.");
         set_dark_mode();
