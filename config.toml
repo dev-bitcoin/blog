@@ -5,6 +5,10 @@ title = "bitcoin-dev blog"
 [taxonomies]
   tag = 'tags'
 
+[outputFormats]
+[outputFormats.RSS]
+  mediatype = "application/rss"
+  baseName = "feed"
 
 [privacy]
   [privacy.disqus]
