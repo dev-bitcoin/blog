@@ -63,11 +63,11 @@ This is based on the built-in [`figure`] shortcode but automatically centers the
 [`figure`]: https://gohugo.io/content-management/shortcodes/#figure
 
 ```
-{{</* center-figure src="/logo-512.png" caption="The bitcoin-dev.blog logo." height=128 width=128 */>}}
+{{</* center-figure src="/img/logo-512.png" caption="The bitcoin-dev.blog logo." height=128 width=128 */>}}
 ```
 produces
 
-{{< center-figure src="/logo-512.png" caption="The bitcoin-dev.blog logo." height=128 width=128 >}}
+{{< center-figure src="/img/logo-512.png" caption="The bitcoin-dev.blog logo." height=128 width=128 >}}
 
 Generally, including images in the repository is preferred to linking to external images.
 Check if you have permission to include the image.
