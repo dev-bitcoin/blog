@@ -5,7 +5,9 @@ author:
   - name: 0xB10C
     github: 0xB10C
     twitter: 0xB10C
-draft: false
+tags:
+  - "Bitcoin Core"
+  - "USDT tracepoints"
 images:
   - /post-data/usdt-support-core/header.png
 ---
