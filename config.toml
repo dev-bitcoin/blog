@@ -1,11 +1,16 @@
 baseURL = "https://bitcoin-dev.blog"
 languageCode = "en-us"
 title = "bitcoin-dev blog"
-images = ["/logo-large.png"]
-description = "Blog posts by Bitcoin developers on their projects."
+
+[params]
+  images = [ "/logo-512.png" ]
+  description = "Bitcoin developers blogging about their open-source projects. A technical open-content blog."
 
 [taxonomies]
   tag = 'tags'
+
+[Social]
+  twitter = "bitcoindevblog"
 
 [outputFormats]
 [outputFormats.RSS]
