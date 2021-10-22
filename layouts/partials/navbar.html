@@ -1,24 +1,16 @@
-<nav class="navbar container border-0 rounded-bottom shadow-sm mb-4">
+<nav class="navbar container rounded-bottom shadow-sm mb-4">
   <a class="navbar-brand" href="/">
-    <img src="/logo-512.png" width="64" height="64" class="d-inline-block align-middle image-to-invert" alt="bitcoin-dev blog logo">
+    <img src="/logo-large.png" height="50" class="d-inline-block align-baseline image-to-invert mx-2" alt="bitcoin-dev blog logo">
+    <div class="d-inline-block">
+      <h1 class="d-block mb-0">bitcoin-dev blog</h1>
+      <small class="d-block">projects by bitcoin devs</small>
+    </div>
   </a>
-  <div class="mr-auto">
-    <div>
-      <h1 class="mb-0">bitcoin-dev blog</h1>
-    </div>
-    <div>
-      <span>A place for Bitcoin developers to share their projects.</span>
-    </div>
-  </div>
   <div class="ml-auto">
-    <div class="btn-group-toggle" data-toggle="buttons">
-      <label class="btn ">
-      <input type="checkbox" id="light-dark-mode-switch">
-        <span class="dark-light-mode-symbol">🌣</span>
-        <noscript>
-          requires JS
-        </noscript>
-      </label>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="light-dark-mode-switch">
+      <label class="form-check-label image-to-invert" for="light-dark-mode-switch">🌓</label>
+      <noscript>requires JS</noscript>
     </div>
     <script>
       const MODE_KEY = "mode"

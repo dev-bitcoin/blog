@@ -1,13 +1,12 @@
 <div class="card mb-4 border-0 rounded shadow-sm">
-  <div class="row no-gutters">
+  <div class="row row-cols-1 row-cols-md-2">
     {{ if .Params.images }}
-      <div class="col-md-4 shadow-sm">
-        <img src="{{index ( .Params.images ) 0}}" style="object-fit: cover; height: 100%;" class="card-img" alt="Image for {{.Title}}">
+      <div class="col col-md-4">
+        <img src="{{index ( .Params.images ) 0}}" style="object-fit: cover; height: 100%;" class="card-img shadow-sm rounded" alt="Image for {{.Title}}">
         <a class="stretched-link umami--click--card-img-{{.Title | urlize}}" href="{{.RelPermalink}}"></a>
       </div>
-      <hr>
     {{ end }}
-    <div class="col-md-8">
+    <div class="col col-md-8">
       <div class="card-body">
         {{ if isset . "PublishDate" }}
           <small class="text-muted">
