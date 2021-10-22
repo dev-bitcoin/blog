@@ -26,7 +26,14 @@ Don't let this get too long, though!
 
 <!--more-->
 
-Here your blog post starts.
+
+
+Here the blog post starts.
+You can find the [source] on GitHub.
+Please read the [CONTRIBUTING.md] before you start writing a post for this blog.
+
+[CONTRIBUTING.md]: https://github.com/dev-bitcoin/blog/blob/main/CONTRIBUTING.md
+[source]: https://github.com/dev-bitcoin/blog/blob/main/content/blog/example-post.md?plain=1
 
 #### Text
 
