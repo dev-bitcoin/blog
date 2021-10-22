@@ -43,6 +43,11 @@ a.navbar-brand {
   color: var(--body-color) !important;
 }
 
+#light-dark-mode-switch.form-check-input:checked {
+    background-color: var(--bs-dark);
+    border-color: var(--bs-gray);
+}
+
 .content-text p {
     font-size: 1em;
     text-align: justify;

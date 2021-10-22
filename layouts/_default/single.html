@@ -18,12 +18,12 @@
                       {{ if (gt $index 0) }} and {{ end }}
                       {{ .name }}
                       {{ if isset . "github" }}
-                        <a href="https://github.com/{{ .github }}" class="mx-1">
+                        <a href="https://github.com/{{ .github }}" class="mx-1 image-to-invert">
                           <img src="/img/footer/github.svg" alt="link to @{{ .github }} on GitHub" height=18 class="d-inline-block align-text-top">
                         </a>
                       {{ end }}
                       {{ if isset . "twitter" }}
-                        <a href="https://twitter.com/{{ .twitter }}" class="mr-1">
+                        <a href="https://twitter.com/{{ .twitter }}" class="mr-1 image-to-invert">
                           <img src="/img/footer/twitter.svg" alt="link to @{{ .twitter }} on Twitter" height=18 class="d-inline-block align-text-top">
                         </a>
                       {{ end }}
