@@ -3,7 +3,7 @@ languageCode = "en-us"
 title = "bitcoin-dev blog"
 
 [params]
-  images = [ "/logo-512.png" ]
+  images = [ "/img/og-image.png" ]
   description = "Bitcoin developers blogging about their open-source projects. A technical open-content blog."
 
 [taxonomies]
