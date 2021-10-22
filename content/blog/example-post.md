@@ -1,0 +1,128 @@
+---
+
+title: "This is an example post"
+subtitle: "Showcasing how to write your own bitcoin-dev.blog post."
+date: 2021-10-20T00:00:00+00:00
+
+authors:
+  - name: "0xB10C"
+    github: "0xb10c"
+    twitter: "twitter"
+  - name: "Co-Author-1"
+    github: "bitcoin"
+    twitter: "bitcoincoreorg"
+images:
+  - "/post-data/example-post/header.png"
+
+# never list this example on the blog
+_build:
+#  list: never
+
+---
+
+Here is the description of the example blog post.
+You'd want to summarize the contents of the following post.
+Don't let this get too long, though!
+
+<!--more-->
+
+Here your blog post starts.
+
+#### Text
+
+You can use markdown formatting.
+
+- **Bold text.**
+- _Italic text._
+- *More italic text.*
+- ~~Strikethrough text.~~
+
+
+#### Links
+
+Markdown lets us include links in three formats.
+[Inline-style links](https://your-looooong-url.btc) can often get very long and make reading the markdown source harder.
+[Reference-style links] are shorter and thus preferred.
+
+[Reference-style links]: https://your-looooong-url.btc
+
+#### Images
+
+For images, we could use markdown image tags too.
+However, it's recommended to use the custom `center-figure` [Hugo shortcode].
+This is based on the built-in [`figure`] shortcode but automatically centers the image and captions.
+
+[Hugo shortcode]: https://gohugo.io/content-management/shortcodes/
+[`figure`]: https://gohugo.io/content-management/shortcodes/#figure
+
+```
+{{</* center-figure src="/logo-512.png" caption="The bitcoin-dev.blog logo." height=128 width=128 */>}}
+```
+produces
+
+{{< center-figure src="/logo-512.png" caption="The bitcoin-dev.blog logo." height=128 width=128 >}}
+
+Generally, including images in the repository is preferred to linking to external images.
+Check if you have permission to include the image.
+
+#### Code
+
+The built-in shortcode [`highlight`] can be used to showcase code.
+
+```
+{{</* highlight rust */>}}
+  let mut builder = wallet_bob.build_tx();
+  builder
+    .add_recipient(addr.script_pubkey(), 60_000)
+    .add_foreign_utxo(alice_outpoint, alice_psbt_input, satisfaction_weight)?;
+{{</* /highlight */>}}
+```
+
+produces
+
+
+{{< highlight rust >}}
+  let mut builder = wallet_bob.build_tx();
+  builder
+    .add_recipient(addr.script_pubkey(), 60_000)
+    .add_foreign_utxo(alice_outpoint, alice_psbt_input, satisfaction_weight)?;
+{{< /highlight >}}
+
+
+[`highlight`]: https://gohugo.io/content-management/shortcodes/#highlight
+
+#### Footnotes
+
+We can include footnotes[^this-is-a-footnote-ref] by using `[^ref]` where `ref` is reference to a `[^ref]: <footnote-text>`.
+
+[^this-is-a-footnote-ref]: This is a footnote.
+
+
+#### Tweets
+
+Hugo offers a built-in tweet shortcode too.
+
+```
+{{</* tweet 1110302988 */>}}
+```
+
+{{< tweet 1110302988 >}}
+
+
+#### Videos
+
+Vimeo and YouTube videos can be embedded with the [`vimeo`] and [`youtube`] tags.
+
+[`vimeo`]: https://gohugo.io/content-management/shortcodes/#vimeo
+
+[`youtube`]: https://gohugo.io/content-management/shortcodes/#youtube
+
+`{{</* vimeo 412058509 */>}}` produces
+{{< vimeo 412058509 >}}
+
+
+`{{</* youtube Ey0xAcN11zk */>}}`
+produces
+
+
+{{< youtube Ey0xAcN11zk >}}
