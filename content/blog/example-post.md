@@ -16,7 +16,7 @@ images:
 
 # never list this example on the blog
 _build:
-#  list: never
+  list: never
 
 ---
 
