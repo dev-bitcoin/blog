@@ -30,9 +30,13 @@ tags:
   #- "Rust"
   #- "GUI"
 
-# Image that will be used as on e.g. twitter and on other sites that read open-graph data (og:image)
-# Also used as the picture shown as card image in the list of blog posts on this site.
-headerImage: "/"
+# Header image (required!)
+# Open-Graph image (og:image) that will be displayed in e.g. the twitter card.
+# Also shown on the main page where blog posts are listed.
+# Create a directory for your images in the "static/post-data/" folder with
+# the title of your blog post.
+images:
+  - /post-data/<FIXME: folder name here!>/header.png
 
 ---
 
