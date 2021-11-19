@@ -30,17 +30,15 @@
                     {{ end }}
                 </span>
                 </br>
-                <span>
-                  {{ if isset .Params "tags" }}
-                  tagged with
-                  {{ range $index, $tag := .Params.tags}}
-                    {{ if (gt $index 0) }}, {{ end }}
-                    <a href="/tags/{{ . | urlize }}">
-                      {{ . }}
-                    </a>
-                  {{ end }}
-                  {{ end }}
-                </span>
+                {{ with .Params.tags }}
+                  <span>
+                    tagged with
+                    {{ $last_tag_index := sub (len . ) 1 }}
+                    {{ range $index, $tag := .}}
+                      <a href="/tags/{{ . | urlize }}">{{ . }}</a>{{ if (ne $index ($last_tag_index)) }}, {{ end }}
+                    {{ end }}
+                  </span>
+                {{ end }}
             </header>
             <hr>
             <section class="content-text">
