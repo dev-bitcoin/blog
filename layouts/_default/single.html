@@ -29,14 +29,20 @@
                       {{ end }}
                     {{ end }}
                 </span>
-                </br>
                 {{ with .Params.tags }}
+                  </br>
                   <span>
                     tagged with
                     {{ $last_tag_index := sub (len . ) 1 }}
                     {{ range $index, $tag := .}}
                       <a href="/tags/{{ . | urlize }}">{{ . }}</a>{{ if (ne $index ($last_tag_index)) }}, {{ end }}
                     {{ end }}
+                  </span>
+                {{ end }}
+                {{ with .Params.appearedfirston }}
+                  <br>
+                  <span>
+                    appeared first on <a href="{{.url}}">{{ .label }}</a>
                   </span>
                 {{ end }}
             </header>

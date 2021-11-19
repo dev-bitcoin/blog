@@ -4,6 +4,13 @@ title: "This is an example post"
 subtitle: "Showcasing how to write your own bitcoin-dev.blog post."
 date: 2021-10-20T00:00:00+00:00
 
+# This isn't really needed for this blog post, but should show-case
+# that you can and are encuraged to link to, e.g., your own blog
+# where the post was first published.
+appearedfirston:
+  label: bitcoin-dev.blog
+  url: "https://bitcoin-dev.blog/blog/example-post/"
+
 authors:
   - name: "0xB10C"
     github: "0xb10c"

@@ -18,6 +18,12 @@ authors:
   #  github: "" # optional
   #  twitter: "" # optional
 
+# Credit where credit is due. You are encouraged to link to, e.g., your own blog
+# where you first published the post. This is optional though.
+appearedfirston: # optional
+  label: "" # domain of your blog. E.g.: "bitcoin-dev.blog". Without "https://".
+  url: "" # full url to your blog post. E.g.: "https://bitcoin-dev.blog/blog/example-post/"
+
 tags:
   #- "Bitcoin Core"
   #- "C++"

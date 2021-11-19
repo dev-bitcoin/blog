@@ -8,6 +8,9 @@ authors:
 tags:
   - "Bitcoin Core"
   - "USDT tracepoints"
+appearedfirston:
+  label: b10c.me
+  url: "https://b10c.me/blog/008-bitcoin-core-usdt-support/"
 images:
   - /post-data/usdt-support-core/header.png
 ---
