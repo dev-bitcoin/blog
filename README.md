@@ -2,7 +2,6 @@
 
 <img align="right" width="120" src="static/img/logo-large.png">
 
-Technical open-content blog posts by Bitcoin developers about their open-source projects.
-Everyone can submit a blog post covering their Bitcoin project.
+Technical and open-content blog posts by Bitcoin developers.
 
-To learn more, see [CONTRIBUTING.md](CONTRIBUTING.md).
+To learn more about submitting a blog post, see [CONTRIBUTING.md](CONTRIBUTING.md).
