@@ -2,9 +2,9 @@
 title: "Userspace, Statically Defined Tracing support for Bitcoin Core"
 date: 2021-08-30T09:00:00+02:00
 authors:
-  - name: 0xB10C
-    github: 0xB10C
-    twitter: 0xB10C
+  - name: "0xB10C"
+    github: "0xB10C"
+    twitter: "0xB10C"
 tags:
   - "Bitcoin Core"
   - "USDT tracepoints"
