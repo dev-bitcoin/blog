@@ -16,9 +16,10 @@ and by long-time Bitcoin Core contributors implementing complex new features.
 **Everyone can submit a PR for a blog post covering a technical Bitcoin topic or an open-source Bitcoin project.**
 
 
-You can support open-source Bitcoin developers via [Bitcoin Developer Donation Portal] and [OpenSats].
+You can support open-source Bitcoin developers via [Bitcoin Developer Donation Portal], [Brink], and [OpenSats].
 
 [Bitcoin Developer Donation Portal]: https://bitcoindevlist.com/
+[Brink]: https://brink.dev/donate
 [OpenSats]: https://opensats.org/
 
 
