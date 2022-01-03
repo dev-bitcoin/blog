@@ -2,17 +2,20 @@
     --body-bg: var(--bs-light);
     --body-color: var(--bs-dark);
     --article-bg: #00000007;
+    --transparent-img-bg: #0000;
 }
 
 html.light {
     --body-bg: var(--bs-light);
     --body-color: var(--bs-dark);
     --article-bg: #00000007;
+    --transparent-img-bg: #0000;
 }
 html.dark {
     --body-bg: var(--bs-dark);
     --body-color: var(--bs-light);
     --article-bg: #ffffff07;
+    --transparent-img-bg: #fffd;
 }
 
 .dark-light-mode-symbol {
@@ -70,6 +73,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .highlight pre {
   padding: 1rem;
+}
+
+.figure-center-img {
+  background-color: var(--transparent-img-bg);
 }
 
 /* MathJax */
