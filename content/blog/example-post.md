@@ -21,6 +21,10 @@ authors:
 images:
   - "/post-data/example-post/header.png"
 
+# enables MathJax support for this blog post
+# Only set this if you are using MathJax in your post.
+mathjax: true
+
 # never list this example on the blog
 _build:
   list: never
@@ -140,3 +144,25 @@ produces
 
 
 {{< youtube Ey0xAcN11zk >}}
+
+---
+
+#### $\LaTeX$ via MathJax
+
+$\LaTeX$ formulars can be embeeded with [MathJax](https://www.mathjax.org/).
+MathJax is disabled by default, but can be enabled by setting `mathjax: true` in the front-matter.
+See the front-matter of this post for an example.
+
+In-line LaTeX can be written as $1 + 1 = 3$. This also works in headings.
+Due to Hugo's MarkDown parser, multi-line formulars [need six backslashes](https://github.com/wowchemy/wowchemy-hugo-themes/issues/291#issuecomment-334746889) (`\\\\\\\\\\\\`) between new lines.
+See the example below.
+
+$$
+\begin{align}
+p & : \text{private key}  \\\\\\
+P = pG & : \text{public key}  \\\\\\
+m & : \text{message}  \\\\\\
+r & : \text{random nonce}  \\\\\\
+R = rG & : \text{nonce commitment}
+\end{align}
+$$

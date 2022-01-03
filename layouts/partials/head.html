@@ -25,4 +25,6 @@
       src="https://umami.b10c.me/umami.js"></script>
     {{ end }}
 
+    {{ if .Params.mathjax }}{{ partial "mathjax_support.html" . }}{{ end }}
+
   </head>
