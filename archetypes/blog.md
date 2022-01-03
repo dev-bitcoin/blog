@@ -38,6 +38,10 @@ tags:
 images:
   - /post-data/<FIXME: folder name here!>/header.png
 
+# MathJax support
+# Set this to true if you plan to use MathJax for LaTeX formulars in your blog post.
+mathjax: false
+
 ---
 
 
