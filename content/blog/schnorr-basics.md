@@ -19,9 +19,9 @@ appearedfirston:
 ---
 
 If you're having a difficult time wrapping your head around Schnorr
-signatures, you're not alone. In this post I make an attempt at
-explaining Schnorr signatures at a level that I myself appreciate, and
-hopefully you'll find it valuable too.
+signatures, you're not alone. In this post, I attempt to explain
+Schnorr signatures at a level that I myself appreciate, and
+hopefully, you'll find it valuable too.
 
 <!--more-->
 
@@ -42,12 +42,12 @@ as the following diagram shows.
     height=80%
     width=80% >}}
 
-The signer has a private key and a message to sign (for example a
-Bitcoin transaction, or a cat picture), and produces a signature. The
+The signer has a private key and a message to sign (for example, a
+Bitcoin transaction or a cat picture) and produces a signature. The
 verifier has the public key corresponding to the private key that the
 signer used, the message, and the signature. The verification process
 makes sure that the signature was created with the correct private
-key, without knowing the private key.
+key without knowing the private key.
 
 If you want a more in-depth explanation, please visit [the second half of chapter 2 of Grokking Bitcoin](https://rosenbaum.se/book/grokking-bitcoin-2.html#_digital_signatures).
 
@@ -66,7 +66,7 @@ The first thing you'll do is to draw a random number, $r$, that we'll
 call the nonce (for "Number Once"). Then you'll treat $r$ as if it was
 a private key, which means that you can generate the corresponding
 public key by multiplying it with $G$, which is the _generator
-point_. At this stage you have the following:
+point_. At this stage, you have the following:
 
 $$
 \begin{align}
@@ -78,7 +78,7 @@ R = rG & : \text{nonce commitment}
 \end{align}
 $$
 
-$R$ is your _nonce commitment_, which will become the first part of
+$R$ is your _nonce commitment_ which will become the first part of
 the final signature, and $r$ must remain secret
 ([explained later](#why-r-secret)) and never be reused (also
 [explained later](#nonce-reuse)). You've prepared everything you need
@@ -140,7 +140,7 @@ $$
 $$
 
 As you can see: If the response equation holds, the verification
-equation holds. Likewise if the verification equation holds, the
+equation holds. Likewise, if the verification equation holds, the
 response equation also holds. Thus, when Fred verifies the equation
 based on points on the elliptic curve, the verification equation, he
 also implicitly verifies that the response equation, based on scalars,
@@ -198,7 +198,7 @@ So Fred could calculate $p$ by subtracting $r$ from $s$ and dividing
 the result by $e$.
 
 By revealing just the nonce commitment, $R$, to Fred, we make sure
-that Fred can't calculate $p$, while at the same time allowing him to
+that Fred can't calculate $p$ while at the same time allowing him to
 verify that $p$ was used to generate the signature.
 
 ## Don't reuse nonces <a id="nonce-reuse"/>
@@ -239,7 +239,7 @@ As you can see, the verifier will be able to extract the private
 key. Lesson learned: Don't reuse nonces.
 
 If the nonce is reused, but for different private keys, $p$ and $p'$,
-the above equation system wouldn't be solvable, because you'd have
+the above equation system wouldn't be solvable because you'd have
 three unknowns, $p$, $p'$, and $r$, but only _two_ equations.
 
 ## What's with the challenge? <a id="challenge"/>
@@ -277,14 +277,14 @@ The last equation is the "verification equation", but solved for
 $R$. The right side of that equation contains only known variables,
 $s$, $e$, and $P$. Thus the signature $(R,s)$ is valid.
 
-With $R$ in the challenge, it's not possible the solve the
+With $R$ in the challenge, it's impossible to solve the
 verification equation for $R$ because $R$ is part of the challenge
 $e$. It's hard to find an $R$ such that $R=sG-H(R||P||m)P$.
 
 ### $P$
 
 Let's finally see what $P$ is doing in the challenge. Suppose that we
-didn't have $P$ in the challenge, $e=H(R||m)$, and that the signature
+didn't have $P$ in the challenge, $e=H(R||m)$ and that the signature
 $(R,s)$ is valid for public key $P$ and message $m$. Then the
 signature $(R,s')=(R,s+ex)$, where $x$ is an arbitrary number, would
 be valid for a public key $P'=P+xG$ and message $m$. Let's look at
@@ -316,7 +316,7 @@ This means that if an attacker knows the parent extended public key
 use this trick to forge signatures for the parent xpub, as well as any
 child xpubs that can be derived from the parent xpub. This is a
 problem not only for BIP32, but for many schemes using public key
-addition somehow, for example Taproot
+addition somehow, for example, Taproot
 ([BIP341](https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki#constructing-and-spending-taproot-outputs)). For
 a bit more details, please visit
 [the Design section of BIP340](https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki#Design).
