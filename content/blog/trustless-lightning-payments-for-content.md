@@ -132,7 +132,7 @@ With the Squeak Protocol, any user can download an encrypted post (called a "squ
 and verify several properties of the squeak:
 
 1) The squeak has a unique hash that is the same across all nodes
-2) The squeak was created by a certain person.
+2) The squeak was created and signed by a certain person.
 3) The squeak was created after a certain time.
 4) The squeak was created in reply to another squeak.
 5) The squeak was encrypted using a scalar that corresponds to a certain
