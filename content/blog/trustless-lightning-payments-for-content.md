@@ -134,7 +134,7 @@ and verify several properties of the squeak:
 1) The squeak has a unique hash that is the same across all nodes
 2) The squeak was created and signed by a certain person.
 3) The squeak was created after a certain time.
-4) The squeak was created in reply to another squeak.
+4) The squeak was created in reply to another squeak (or not).
 5) The squeak was encrypted using a scalar that corresponds to a certain
 elliptic curve point.
 
