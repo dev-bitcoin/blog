@@ -16,7 +16,7 @@ images:
   - "/post-data/compact-block-filters/cover.png"
 
 appearedfirston:
-    label: "squeaknode.com"
+    label: "squeaknode.org"
     url: "TODO"
 
 ---
