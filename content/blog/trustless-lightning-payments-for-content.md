@@ -95,7 +95,8 @@ at the creation-time of the invoice. When the buyer decodes the invoice payment
 string, they will obtain the payment point (`p = s*G`). The buyer will only
 obtain the "preimage" `s` after the payment is settled.
 
-We can take advantage of the distributive property of points on elliptic curves:
+So now that we know that PTLC invoices use elliptic curve points, we can
+take advantage of the distributive property of points on elliptic curves:
 
 ```
 (s1 + s2)*G = s1*G + s2*G
