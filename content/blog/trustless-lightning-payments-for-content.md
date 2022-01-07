@@ -23,7 +23,7 @@ appearedfirston:
 
 The existence of the Lightning Network enables new types of online communities
 where membership and access to content is dependent on individual users making
-Bitcoin micropayments. These new communities can operate without a centralized
+Bitcoin micropayments. These new communities can operate without a central
 authority, and without a middleman taking a cut of the profit.
 
 In this post, I will briefly describe the weaknesses of the existing models
