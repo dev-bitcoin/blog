@@ -221,7 +221,7 @@ All of these values are used to populate the squeak header. After the header is 
 * The private key of the author is used to sign the squeak hash.
 * The signature is then attached to the squeak.
 
-The `MakeSqueak` function looks like this:
+The [MakeSqueak](https://github.com/squeaknode/squeak/blob/fde192b8b59b59090c6d2eb39f87d6b41b15c05e/squeak/core/__init__.py#L415-L462) function looks like this:
 
 ```python
 def MakeSqueak(
@@ -315,7 +315,7 @@ When Bob makes a Lightning payment to one of the sellers, he will obtain the pre
 
 Now Bob can read the content of the squeak!
 
-The `GetDecryptedContent` method looks like this:
+The [GetDecryptedContent](https://github.com/squeaknode/squeak/blob/fde192b8b59b59090c6d2eb39f87d6b41b15c05e/squeak/core/__init__.py#L242-L261) method looks like this:
 
 ```python
     def GetDecryptedContent(
