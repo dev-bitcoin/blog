@@ -80,7 +80,8 @@ Unfortunately, this approach requires the consumer to trust the honesty of the
 content seller. A malicious seller could create an invoice using an invalid
 decryption key as the preimage. The buyer would make the Lightning payment, and
 only realize after the payment that they got an invalid decryption key. The
-buyer has no way to verify the validity of the invoice until it is too late.
+buyer has no way to verify the validity of the invoice until it is too late,
+and they have already lost their funds.
 
 This model of monetization can work if the buyer is able to trust the seller.
 This might be true if the seller is a large, reputable institution, but this
