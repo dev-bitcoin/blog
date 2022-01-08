@@ -74,6 +74,8 @@ the content.
 <!-- In the current implementation of Lightning in LND (using HTLCs), the preimage -->
 <!-- would be specified in the `r_preimage` field of the `AddInvoice` RPC method. -->
 
+{{< center-figure src="/post-data/trustless-lightning-payments/htlc-example-2.png" caption="" height=600 width=600 >}}
+
 Unfortunately, this approach requires the consumer to trust the honesty of the
 content seller. A malicious seller could create an invoice using an invalid
 decryption key as the preimage. The buyer would make the Lightning payment, and
