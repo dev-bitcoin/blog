@@ -13,7 +13,7 @@ tags:
   - "Bitcoin"
 
 images:
-  - "/post-data/trustless-lightning-payments/ptlc-example-1.png"
+  - "/post-data/trustless-lightning-payments/ptlc-example-2.png"
 
 appearedfirston:
     label: "squeaknode.org"
