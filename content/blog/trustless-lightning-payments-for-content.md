@@ -17,7 +17,7 @@ images:
 
 appearedfirston:
     label: "squeaknode.org"
-    url: "TODO"
+    url: "https://squeaknode.org/lightning/ptlc/bitcoin/2022/01/07/trustless-lightning"
 
 ---
 
