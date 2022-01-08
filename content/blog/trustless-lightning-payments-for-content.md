@@ -47,8 +47,8 @@ Lightning network to reward content creators:
 - Value-For-Value (Used in Podcasting 2.0 apps like Fountain)
 - Tipping (Used in Zion)
 
-These apps use a voluntary payment model, where any user can access the
-content, and then decide how much they want to pay in tips to reward the
+These apps use a voluntary payment model, where any user can access content
+for free, and then decide how much they want to pay in tips to reward the
 content creator.
 
 This leads to a situation where the majority of users are consuming the
