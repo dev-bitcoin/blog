@@ -112,16 +112,17 @@ The basic idea for selling content is as follows:
 * Alice has a piece of content she wants to be sellable.
 * Alice generates a scalar value `s1` to use as a symmetric encryption/decryption key, and encrypts the content.
 * Alice calculates the point `p1` on an elliptic curve `G` by calculating `p1 = s1*G`.
-* Alice publishes `p1` for anyone interested in buying the content.
-* Bob downloads the encrypted content, and requests an invoice to unlock the content.
-* Alice generates a new scalar value `s2`, and creates a *PTLC* Lightning invoice with `s1 + s2` as the preimage.
-* Alice sends Bob `s2` and the Lightning invoice as a payment request string.
+* Alice makes `p1` publicly available for anyone interested in buying the content.
+* Alice shares the encrypted content with a relay named Carol.
+* Bob downloads the encrypted content from Carol, and requests an invoice to unlock the content.
+* Carol generates a new scalar value `s2`, and creates a *PTLC* Lightning invoice with `s1 + s2` as the preimage.
+* Carol sends Bob `s2` and the Lightning invoice as a payment request string.
 * Bob decodes the payment request string to get the payment point of the invoice, call it `p3`.
 * Bob calculates `s2*G`. If it is equal to `p3 - p1`, then Bob knows that the invoice is valid.
 * Bob pays the Lightning invoice, and gets the value of `s1 + s2` as the preimage.
 * Bob calculates `s1 = (s1 + s2) - s2` to get the decryption key, and decrypts the content.
 
-If Alice tries to give Bob an invalid invoice, Bob will know before he pays the invoice.
+If Carol tries to give Bob an invalid invoice, Bob will know before he pays the invoice.
 
 The above example assumes that Bob is able to trust that the value of `p1` is valid.
 
