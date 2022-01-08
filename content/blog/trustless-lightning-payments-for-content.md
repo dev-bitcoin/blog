@@ -83,7 +83,7 @@ only realize after the payment that they got an invalid decryption key. The
 buyer has no way to verify the validity of the invoice until it is too late,
 and they have already lost their funds.
 
-This model of monetization can work if the buyer is able to trust the seller.
+This model of monetization can only work if the buyer is able to trust the seller.
 This might be true if the seller is a large, reputable institution, but this
 model breaks down if we try to extend it to a peer-to-peer decentralized
 network, where all connections are assumed to be trustless.
