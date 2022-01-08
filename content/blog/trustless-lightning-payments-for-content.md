@@ -126,7 +126,7 @@ If Carol tries to give Bob an invalid invoice, Bob will know before he pays the 
 
 The above example assumes that Bob is able to trust that the value of `p1` is valid.
 
-{{< center-figure src="/post-data/trustless-lightning-payments/ptlc-example-1.png" caption="" height=600 width=600 >}}
+{{< center-figure src="/post-data/trustless-lightning-payments/ptlc-example-2.png" caption="" height=600 width=600 >}}
 
 Now any node in the network can relay content from any creator, and earn a profit by
 selling it trustlessly to any consumer. The consumer does not have to trust that the
