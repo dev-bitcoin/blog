@@ -35,7 +35,7 @@ payment channels are the standard in Lightning Network.
 If we imagine a world where social media is decentralized, content will no
 longer be hosted by large companies like Twitter, Facebook, Spotify, and
 Youtube. Instead, we will see individuals and independent hosting providers
-relaying and aggregating content that is signed cryptographically by indivual
+relaying and aggregating content that is signed cryptographically by individual
 users. This raises the question of how will these relays/aggregators be
 incentivized to host content. Lightning payments are the obvious answer.
 
