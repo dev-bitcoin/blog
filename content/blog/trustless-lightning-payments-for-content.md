@@ -351,7 +351,7 @@ And there is an implementation of a full node running the Squeak Protocol here: 
 
 
 [github repo]: https://github.com/squeaknode/squeak
-[cross-post]: https://www.ellemouton.com/blog/view/9
+[cross-post]: https://squeaknode.org/lightning/ptlc/bitcoin/2022/01/07/trustless-lightning
 [website]: https://squeaknode.org/
 
 
