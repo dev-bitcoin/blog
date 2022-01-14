@@ -1,0 +1,219 @@
+<!doctype html><html lang=en><head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<meta http-equiv=x-ua-compatible content="ie=edge">
+<meta name=description content>
+<title>This is an example post</title>
+<meta property="og:title" content="This is an example post">
+<meta property="og:description" content="Here is the description of the example blog post.
+You&rsquo;d want to summarize the contents of the following post.
+Don&rsquo;t let this get too long, though!">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://bitcoin-dev.blog/blog/example-post/"><meta property="og:image" content="https://bitcoin-dev.blog/post-data/example-post/header.png"><meta property="article:section" content="blog">
+<meta property="article:published_time" content="2021-10-20T00:00:00+00:00">
+<meta property="article:modified_time" content="2021-10-20T00:00:00+00:00">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://bitcoin-dev.blog/post-data/example-post/header.png">
+<meta name=twitter:title content="This is an example post">
+<meta name=twitter:description content="Here is the description of the example blog post.
+You&rsquo;d want to summarize the contents of the following post.
+Don&rsquo;t let this get too long, though!">
+<meta name=twitter:site content="@bitcoindevblog">
+<link rel=stylesheet href=/css/bootstrap.min.css integrity=sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC crossorigin=anonymous>
+<link rel=stylesheet href=/css/syntax.css>
+<link rel=stylesheet href=/css/index.css>
+<link rel="shortcut icon" href=/favicon.png type=image/png>
+<link rel=icon href=/favicon.png type=image/png>
+<script async defer data-website-id=dfc2acc6-9237-4a34-bc2b-37967cb79a4c src=https://umami.b10c.me/umami.js></script>
+<script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:!0,processEnvironments:!0},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}},window.addEventListener('load',a=>{document.querySelectorAll("mjx-container").forEach(function(a){a.parentElement.classList+='has-jax'})})</script>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script>
+</head>
+<body><nav class="navbar container rounded-bottom shadow-sm mb-4">
+<a class=navbar-brand href=/>
+<img src=/img/logo-large.png height=50 class="d-inline-block align-baseline image-to-invert mx-2" alt="bitcoin-dev blog logo">
+<div class=d-inline-block>
+<h1 class="d-block mb-0">bitcoin-dev blog</h1>
+<h6 class="d-block mb-0" style="font-size:calc(.7rem + .7vw)">by and for Bitcoin developers</h6>
+</div>
+</a>
+<div class=ml-auto>
+<div class="form-check form-switch">
+<input class=form-check-input type=checkbox id=light-dark-mode-switch>
+<noscript>requires JS</noscript>
+</div>
+<script>var html,darkmodeSwitch;const MODE_KEY="mode";html=document.querySelector("html"),darkmodeSwitch=document.getElementById("light-dark-mode-switch");function set_dark_mode(){darkmodeSwitch.checked=!0,html.classList.add("dark"),html.classList.remove("light"),localStorage.setItem(MODE_KEY,!0)}function set_light_mode(){darkmodeSwitch.checked=!1,html.classList.add("light"),html.classList.remove("dark"),localStorage.setItem(MODE_KEY,!1)}let isModeStored=localStorage.getItem(MODE_KEY)!==null,perfersDarkmode=window.matchMedia('(prefers-color-scheme: dark)').matches;if(isModeStored){let a=localStorage.getItem(MODE_KEY)=="true";console.log("Dark-mode set to",a,"in localStorage."),a?set_dark_mode():set_light_mode()}else perfersDarkmode?(console.log("User prefers dark-mode."),set_dark_mode()):set_light_mode();darkmodeSwitch.addEventListener('change',a=>{a.currentTarget.checked?set_dark_mode():set_light_mode()})</script>
+</div>
+</nav>
+<div id=content class=container>
+<article class="card py-2 border-0 rounded shadow-sm">
+<div class=card-body>
+<div class="card-text px-lg-5 mx-lg-5 px-md-3 mx-md-3">
+<header class="mt-lg-4 mb-3">
+<span class=small>
+</span>
+<h2>
+This is an example post
+</h2>
+<h5>Showcasing how to write your own bitcoin-dev.blog post.</h5>
+<span>
+published October 20, 2021
+</span>
+<span>
+by
+0xB10C
+<a href=https://github.com/0xb10c class="mx-1 image-to-invert">
+<img src=/img/footer/github.svg alt="link to @0xb10c on GitHub" height=18 class="d-inline-block align-text-top">
+</a>
+<a href=https://twitter.com/twitter class="mr-1 image-to-invert">
+<img src=/img/footer/twitter.svg alt="link to @twitter on Twitter" height=18 class="d-inline-block align-text-top">
+</a>
+and
+Co-Author-1
+<a href=https://github.com/bitcoin class="mx-1 image-to-invert">
+<img src=/img/footer/github.svg alt="link to @bitcoin on GitHub" height=18 class="d-inline-block align-text-top">
+</a>
+<a href=https://twitter.com/bitcoincoreorg class="mr-1 image-to-invert">
+<img src=/img/footer/twitter.svg alt="link to @bitcoincoreorg on Twitter" height=18 class="d-inline-block align-text-top">
+</a>
+</span>
+<br>
+<span>
+appeared first on <a href=https://bitcoin-dev.blog/blog/example-post/>bitcoin-dev.blog</a>
+</span>
+</header>
+<hr>
+<section class=content-text>
+<p>Here is the description of the example blog post.
+You&rsquo;d want to summarize the contents of the following post.
+Don&rsquo;t let this get too long, though!</p>
+<p>Here the blog post starts.
+You can find the <a href="https://github.com/dev-bitcoin/blog/blob/main/content/blog/example-post.md?plain=1">source</a> on GitHub.
+Please read the <a href=https://github.com/dev-bitcoin/blog/blob/main/CONTRIBUTING.md>CONTRIBUTING.md</a> before you start writing a post for this blog.</p>
+<h4 id=text>Text</h4>
+<p>You can use markdown formatting.</p>
+<ul>
+<li><strong>Bold text.</strong></li>
+<li><em>Italic text.</em></li>
+<li><em>More italic text.</em></li>
+<li><del>Strikethrough text.</del></li>
+</ul>
+<h4 id=links>Links</h4>
+<p>Markdown lets us include links in three formats.
+<a href=https://your-looooong-url.btc>Inline-style links</a> can often get very long and make reading the markdown source harder.
+<a href=https://your-looooong-url.btc>Reference-style links</a> are shorter and thus preferred.</p>
+<h4 id=images>Images</h4>
+<p>For images, we could use markdown image tags too.
+However, it&rsquo;s recommended to use the custom <code>center-figure</code> <a href=https://gohugo.io/content-management/shortcodes/>Hugo shortcode</a>.
+This is based on the built-in <a href=https://gohugo.io/content-management/shortcodes/#figure><code>figure</code></a> shortcode but automatically centers the image and captions.</p>
+<pre tabindex=0><code>{{&lt; center-figure src=&quot;/img/logo-512.png&quot; caption=&quot;The bitcoin-dev.blog logo.&quot; height=128 width=128 &gt;}}
+</code></pre><p>produces</p>
+<figure><img src=/img/logo-512.png class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" alt="The bitcoin-dev.blog logo." width=128 height=128><figcaption>
+<p>
+<center>The bitcoin-dev.blog logo.
+</center>
+</p>
+</figcaption>
+</figure>
+<p>Generally, including images in the repository is preferred to linking to external images.
+Check if you have permission to include the image.</p>
+<h4 id=code>Code</h4>
+<p>The built-in shortcode <a href=https://gohugo.io/content-management/shortcodes/#highlight><code>highlight</code></a> can be used to showcase code.</p>
+<pre tabindex=0><code>{{&lt; highlight rust &gt;}}
+  let mut builder = wallet_bob.build_tx();
+  builder
+    .add_recipient(addr.script_pubkey(), 60_000)
+    .add_foreign_utxo(alice_outpoint, alice_psbt_input, satisfaction_weight)?;
+{{&lt; /highlight &gt;}}
+</code></pre><p>produces</p>
+<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-rust data-lang=rust>  <span style=color:#66d9ef>let</span> <span style=color:#66d9ef>mut</span> builder <span style=color:#f92672>=</span> wallet_bob.build_tx();
+  builder
+    .add_recipient(addr.script_pubkey(), <span style=color:#ae81ff>60_000</span>)
+    .add_foreign_utxo(alice_outpoint, alice_psbt_input, satisfaction_weight)<span style=color:#f92672>?</span>;</code></pre></div>
+<h4 id=footnotes>Footnotes</h4>
+<p>We can include footnotes<sup id=fnref:1><a href=#fn:1 class=footnote-ref role=doc-noteref>1</a></sup> by using <code>[^ref]</code> where <code>ref</code> is reference to a <code>[^ref]: &lt;footnote-text></code>.</p>
+<h4 id=tweets>Tweets</h4>
+<p>Hugo offers a built-in tweet shortcode too.</p>
+<pre tabindex=0><code>{{&lt; tweet 1110302988 &gt;}}
+</code></pre><blockquote class=twitter-tweet data-dnt=true><p lang=en dir=ltr>Running bitcoin</p>&mdash; halfin (@halfin) <a href="https://twitter.com/halfin/status/1110302988?ref_src=twsrc%5Etfw">January 11, 2009</a></blockquote>
+<script async src=https://platform.twitter.com/widgets.js></script>
+<h4 id=videos>Videos</h4>
+<p>Vimeo and YouTube videos can be embedded with the <a href=https://gohugo.io/content-management/shortcodes/#vimeo><code>vimeo</code></a> and <a href=https://gohugo.io/content-management/shortcodes/#youtube><code>youtube</code></a> tags.</p>
+<p><code>{{&lt; vimeo 412058509 >}}</code> produces
+<div style=position:relative;padding-bottom:56.25%;height:0;overflow:hidden>
+<iframe src="https://player.vimeo.com/video/412058509?dnt=1" style=position:absolute;top:0;left:0;width:100%;height:100%;border:0 title="vimeo video" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+</div>
+</p>
+<p><code>{{&lt; youtube Ey0xAcN11zk >}}</code>
+produces</p>
+<div style=position:relative;padding-bottom:56.25%;height:0;overflow:hidden>
+<iframe src=https://www.youtube-nocookie.com/embed/Ey0xAcN11zk style=position:absolute;top:0;left:0;width:100%;height:100%;border:0 allowfullscreen title="YouTube Video"></iframe>
+</div>
+<hr>
+<h4 id=latex-via-mathjax>$\LaTeX$ via MathJax</h4>
+<p>$\LaTeX$ formulars can be embeeded with <a href=https://www.mathjax.org/>MathJax</a>.
+MathJax is disabled by default, but can be enabled by setting <code>mathjax: true</code> in the front-matter.
+See the front-matter of this post for an example.</p>
+<p>In-line LaTeX can be written as $1 + 1 = 3$. This also works in headings.
+Due to Hugo&rsquo;s MarkDown parser, multi-line formulars <a href=https://github.com/wowchemy/wowchemy-hugo-themes/issues/291#issuecomment-334746889>need six backslashes</a> (<code>\\\\\\\\\\\\</code>) between new lines.
+See the example below.</p>
+<p>$$
+\begin{align}
+p & : \text{private key} \\\<br>
+P = pG & : \text{public key} \\\<br>
+m & : \text{message} \\\<br>
+r & : \text{random nonce} \\\<br>
+R = rG & : \text{nonce commitment}
+\end{align}
+$$</p>
+<section class=footnotes role=doc-endnotes>
+<hr>
+<ol>
+<li id=fn:1 role=doc-endnote>
+<p>This is a footnote.&#160;<a href=#fnref:1 class=footnote-backref role=doc-backlink>&#8617;&#xfe0e;</a></p>
+</li>
+</ol>
+</section>
+</section>
+<section>
+<noscript>
+<div class="alert alert-warning" role=alert>
+Enable JavaScript to view comments.
+Comments are hosted on GitHub with <a href=https://utteranc.es/>utteranc.es</a>.
+</div>
+</noscript>
+<script src=https://utteranc.es/client.js repo=dev-bitcoin/blog-comments issue-term=title label=Comments theme=preferred-color-scheme crossorigin=anonymous async></script>
+</section>
+<section class="text-muted small">
+All text and images in this work are licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative Commons Attribution-ShareAlike 4.0 International License</a>
+<a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=https://i.creativecommons.org/l/by-sa/4.0/80x15.png></a>
+</section>
+</div>
+</div>
+</article>
+<section>
+<div class=row>
+</div>
+</section>
+</div><footer class="container text-center my-3">
+<div class=my-3>
+<a rel=me href=https://twitter.com/bitcoindevblog class="m-2 image-to-invert umami--click--footer-twitter">
+<img src=/img/footer/twitter.svg alt="logo twitter" height=32px>
+</a>
+<a rel=me href=https://github.com/dev-bitcoin class="m-2 image-to-invert umami--click--footer-github">
+<img src=/img/footer/github.svg alt="logo github" height=32px>
+</a>
+<a href=/feed.xml class="m-2 image-to-invert umami--click--footer-rss-feed">
+<img src=/img/footer/rss.svg alt="logo rss" height=32px>
+</a>
+<a href=mailto:contact@bitcoin-dev.blog class="m-2 image-to-invert umami--click--footer-gmail">
+<img src=/img/footer/gmail.svg alt="logo mail" height=32px>
+</a>
+</div>
+<span class="small text-muted">
+This page uses a self-hosted <a href=https://umami.is class=umami--click--footer-umamiis>umami.is</a> instance as privacy-friendly visitor counter.
+The statistics are pubicly accessible <a href=https://umami.b10c.me/share/hwUBMhXc/bitcoin-dev-blog class=umami--click--footer-stats>here</a>.
+</span>
+</footer>
+</body>
+</html>

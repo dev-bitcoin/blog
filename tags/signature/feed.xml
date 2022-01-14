@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>signature on bitcoin-dev blog</title><link>https://bitcoin-dev.blog/tags/signature/</link><description>Recent content in signature on bitcoin-dev blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 03 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bitcoin-dev.blog/tags/signature/feed.xml" rel="self" type="application/rss+xml"/><item><title>Schnorr basics</title><link>https://bitcoin-dev.blog/blog/schnorr-basics/</link><pubDate>Mon, 03 Jan 2022 00:00:00 +0000</pubDate><guid>https://bitcoin-dev.blog/blog/schnorr-basics/</guid><description>&lt;p>If you&amp;rsquo;re having a difficult time wrapping your head around Schnorr
+signatures, you&amp;rsquo;re not alone. In this post, I attempt to explain
+Schnorr signatures at a level that I myself appreciate, and
+hopefully, you&amp;rsquo;ll find it valuable too.&lt;/p>
+&lt;h2 id="whats-schnorr">What&amp;rsquo;s Schnorr?&lt;/h2>
+&lt;p>Schnorr is a new signature scheme in Bitcoin that got activated in the
+taproot upgrade. Schnorr has some nice properties listed in
+&lt;a href="https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki#motivation">BIP340&lt;/a>, but I won&amp;rsquo;t reiterate those here.&lt;/p>
+&lt;h2 id="signing-and-verifying">Signing and verifying&lt;/h2>
+&lt;p>A signature scheme consists of two actions, signing and verification
+as the following diagram shows.&lt;/p>
+&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/schnorr-basics/sig-overview.svg" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded"
+alt="Left side: signing using a message and a private key. Right side: verification that the message (the cat) was signed with the correct private key." width="80%" height="80%"/>&lt;figcaption>
+&lt;p>
+&lt;center>Left side: signing using a message and a private key. Right side: verification that the message (the cat) was signed with the correct private key.
+&lt;/center>
+&lt;/p>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>The signer has a private key and a message to sign (for example, a
+Bitcoin transaction or a cat picture) and produces a signature. The
+verifier has the public key corresponding to the private key that the
+signer used, the message, and the signature. The verification process
+makes sure that the signature was created with the correct private
+key without knowing the private key.&lt;/p>
+&lt;p>If you want a more in-depth explanation, please visit &lt;a href="https://rosenbaum.se/book/grokking-bitcoin-2.html#_digital_signatures">the second half of chapter 2 of Grokking Bitcoin&lt;/a>.&lt;/p>
+&lt;h3 id="signer">Signer&lt;/h3>
+&lt;p>We&amp;rsquo;re now going to see how a Schnorr signature is created. It
+represents the left side of the diagram above. I assume that you&amp;rsquo;re
+familiar with how a key pair is created using a random number
+generator and an elliptic curve. If not, I suggest you read
+&lt;a href="https://rosenbaum.se/book/grokking-bitcoin-4.html#public-key-math">section 4.8 of Grokking Bitcoin&lt;/a>.&lt;/p>
+&lt;p>Suppose that you want to make a signature for the cat picture. The
+picture is the message, $m$, to sign. Your private key is $p$ which belongs to your public key $P$.&lt;/p>
+&lt;p>The first thing you&amp;rsquo;ll do is to draw a random number, $r$, that we&amp;rsquo;ll
+call the nonce (for &amp;ldquo;Number Once&amp;rdquo;). Then you&amp;rsquo;ll treat $r$ as if it was
+a private key, which means that you can generate the corresponding
+public key by multiplying it with $G$, which is the &lt;em>generator
+point&lt;/em>. At this stage, you have the following:&lt;/p>
+&lt;p>$$
+\begin{align}
+p &amp;amp; : \text{private key} \\&lt;br>
+P = pG &amp;amp; : \text{public key} \\&lt;br>
+m &amp;amp; : \text{message} \\&lt;br>
+r &amp;amp; : \text{random nonce} \\&lt;br>
+R = rG &amp;amp; : \text{nonce commitment}
+\end{align}
+$$&lt;/p>
+&lt;p>$R$ is your &lt;em>nonce commitment&lt;/em> which will become the first part of
+the final signature, and $r$ must remain secret
+(&lt;a href="#why-r-secret">explained later&lt;/a>) and never be reused (also
+&lt;a href="#nonce-reuse">explained later&lt;/a>). You&amp;rsquo;ve prepared everything you need
+to make the signature. You&amp;rsquo;ll do it in two steps. Step 1 is to
+calculate a so-called &lt;em>challenge hash&lt;/em>, $e$:&lt;/p>
+&lt;p>$$
+e = H(R || P || m)
+$$&lt;/p>
+&lt;p>The challenge hash is the hash of the challenge, which is the
+concatenation of $R$, $P$, and $m$. These components will all be
+available to the verifier. Using the challenge hash, you can now do step 2:
+Calculate the &lt;em>challenge response&lt;/em>, or simply &lt;em>response&lt;/em>, $s$, which
+is the second part of the signature (Thanks to Anthony Towns,
+Ruben Somsen, and nothingmuch on Twitter for
+&lt;a href="https://twitter.com/kallerosenbaum/status/1472515231050080266">their help with the name &lt;em>response&lt;/em>&lt;/a>.):&lt;/p>
+&lt;p>$$
+s = r + ep \tag{1} \label{respeqn}
+$$&lt;/p>
+&lt;p>Finally, your signature is&lt;/p>
+&lt;p>$$
+(R,s)
+$$&lt;/p>
+&lt;p>You send the cat picture, $m$, and your signature $(R,s)$ to your
+friend, Fred.&lt;/p>
+&lt;h3 id="verifier">Verifier&lt;/h3>
+&lt;p>Fred wants to make sure the cat picture hasn&amp;rsquo;t been compromised during
+transfer and that it really originates from you, the only one with
+access to your private key $p$. He has access to $P$, $m$, $R$, and
+$s$. Of course, he also has access to $G$ because that&amp;rsquo;s a widely
+known constant. From this information, he can calculate the challenge
+hash and verify that the &lt;em>verification equation&lt;/em> balances:&lt;/p>
+&lt;p>$$
+\begin{align}
+e &amp;amp; = H(R || P || m) \\&lt;br>
+sG &amp;amp; = R + eP \tag{2} \label{vereqn}
+\end{align}
+$$&lt;/p>
+&lt;p>&lt;strong>If this equation balances, Fred can be sure that the signature was
+made with $p$&lt;/strong>. Note that the verification equation, equation
+$(\ref{vereqn})$, is the response equation, $(\ref{respeqn})$, where
+both sides are multiplied by $G$. Starting with the response equation,
+we get&lt;/p>
+&lt;p>$$
+\begin{align}
+&amp;amp;s = r + ep \iff sG = (r+ep)G \\&lt;br>
+&amp;amp;\iff sG = rG + epG \iff sG = R + eP
+\end{align}
+$$&lt;/p>
+&lt;p>As you can see: If the response equation holds, the verification
+equation holds. Likewise, if the verification equation holds, the
+response equation also holds. Thus, when Fred verifies the equation
+based on points on the elliptic curve, the verification equation, he
+also implicitly verifies that the response equation, based on scalars,
+holds.&lt;/p>
+&lt;p>When Fred has verified the signature, he can enjoy the cat picture,
+fully confident that it&amp;rsquo;s actually the same picture as you sent him.&lt;/p>
+&lt;h2 id="why-is-r-secret-a-idwhy-r-secreta">Why is $r$ secret? &lt;!-- raw HTML omitted -->&lt;!-- raw HTML omitted -->&lt;/h2>
+&lt;p>You might wonder why the nonce $r$ must be kept secret. You might even
+wonder why it&amp;rsquo;s needed at all? Let&amp;rsquo;s start with the latter. Let&amp;rsquo;s remove $r$ from the process and see what happens.&lt;/p>
+&lt;p>You would create the signature as follows:&lt;/p>
+&lt;p>$$
+\begin{array}{}
+e = H(P || m) \\&lt;br>
+s = ep
+\end{array}
+$$&lt;/p>
+&lt;p>The signature would consist only of $s$. Fred would then verify your signature as:&lt;/p>
+&lt;p>$$
+\begin{array}{}
+e = H(P || m) \\&lt;br>
+sG = eP
+\end{array}
+$$&lt;/p>
+&lt;p>That equation holds, but it would also allow Fred to extract the
+private key $p$ since he knows both $s$ and $e$. He&amp;rsquo;ll take the
+response equation and solve it for p:&lt;/p>
+&lt;p>$$
+s = ep \iff p = \frac{s}{e}
+$$&lt;/p>
+&lt;p>OK, we need the nonce to prevent Fred from figuring out your private
+key, but why must we keep the nonce secret? Why the hassle of using
+the nonce commitment, instead of the nonce itself?&lt;/p>
+&lt;p>It&amp;rsquo;s for the same reason. Suppose that that the nonce, $r$, was made
+available to Fred, then he could figure out $p$ by:&lt;/p>
+&lt;p>$$
+\begin{array}{}
+e = H(R || P || m) \\&lt;br>
+s = r + ep \iff p = \frac{s-r}{e}
+\end{array}
+$$&lt;/p>
+&lt;p>So Fred could calculate $p$ by subtracting $r$ from $s$ and dividing
+the result by $e$.&lt;/p>
+&lt;p>By revealing just the nonce commitment, $R$, to Fred, we make sure
+that Fred can&amp;rsquo;t calculate $p$ while at the same time allowing him to
+verify that $p$ was used to generate the signature.&lt;/p>
+&lt;h2 id="dont-reuse-nonces-a-idnonce-reuse">Don&amp;rsquo;t reuse nonces &lt;!-- raw HTML omitted -->&lt;/h2>
+&lt;p>Even if you keep the nonce secret, you may still leak your private key
+if you use the nonce twice for the same private key. Suppose that you
+make two signatures with the same nonce and private key as follows:&lt;/p>
+&lt;p>$$
+\begin{array}{lr}
+e = H(R || P || m) &amp;amp; e' = H(R || P || m')\\&lt;br>
+s = r + ep &amp;amp; s' = r + e&amp;rsquo;p
+\end{array}
+$$&lt;/p>
+&lt;p>Then you give the signatures $(R,s)$ and $(R,s')$ to the verifier. The
+verifier can then use simple arithmetic to calculate your private
+key. He can set up an equation system with two equations and two
+unknown as follows:&lt;/p>
+&lt;p>$$
+\begin{align}
+s &amp;amp;= r + ep\\&lt;br>
+s' &amp;amp;= r + e&amp;rsquo;p
+\end{align}
+$$&lt;/p>
+&lt;p>This is solvable for $p$ by subtracting $s'$ from $s$:&lt;/p>
+&lt;p>$$
+\begin{align}
+&amp;amp;s-s'=r+ep-r-e&amp;rsquo;p \\&lt;br>
+&amp;amp;=(e-e')p \implies p=\frac{s-s'}{e-e'}
+\end{align}
+$$&lt;/p>
+&lt;p>As you can see, the verifier will be able to extract the private
+key. Lesson learned: Don&amp;rsquo;t reuse nonces.&lt;/p>
+&lt;p>If the nonce is reused, but for different private keys, $p$ and $p'$,
+the above equation system wouldn&amp;rsquo;t be solvable because you&amp;rsquo;d have
+three unknowns, $p$, $p'$, and $r$, but only &lt;em>two&lt;/em> equations.&lt;/p>
+&lt;h2 id="whats-with-the-challenge-a-idchallenge">What&amp;rsquo;s with the challenge? &lt;!-- raw HTML omitted -->&lt;/h2>
+&lt;p>The challenge hash, $e$, is the hash of the challenge $R||P||m$. Why
+do we use this particular challenge? Let&amp;rsquo;s look at the three components separately.&lt;/p>
+&lt;h3 id="m">$m$&lt;/h3>
+&lt;p>The message to sign is $m$, so it&amp;rsquo;s really important that $m$ is
+somehow committed to by the signature. If we&amp;rsquo;d remove $m$ from the
+challenge, the &amp;ldquo;signature&amp;rdquo; would be valid for any message.&lt;/p>
+&lt;h3 id="r">$R$&lt;/h3>
+&lt;p>(Thanks to &lt;a href="https://x0f.org/@waxwing/107491024866468566">waxwing&lt;/a> and
+&lt;a href="https://mastodon.social/@ajtowns/107491605500890702">A J Towns&lt;/a> for
+their help in sorting this out.)&lt;/p>
+&lt;p>To make sure that no one but the owner of the private key can create a
+signature, the challenge must contain the nonce commitment
+$R$. Suppose that the challenge didn&amp;rsquo;t include the nonce commitment,
+then a signature can be trivially forged by anyone with access to the
+public key $P$. They can make up an arbitrary $s$ and do:&lt;/p>
+&lt;p>$$
+\begin{align}
+&amp;amp;e = H(P||m)\\&lt;br>
+&amp;amp;s = \text{any number} \\&lt;br>
+&amp;amp;sG=R+eP \implies R=sG-eP
+\end{align}
+$$&lt;/p>
+&lt;p>The last equation is the &amp;ldquo;verification equation&amp;rdquo;, but solved for
+$R$. The right side of that equation contains only known variables,
+$s$, $e$, and $P$. Thus the signature $(R,s)$ is valid.&lt;/p>
+&lt;p>With $R$ in the challenge, it&amp;rsquo;s impossible to solve the
+verification equation for $R$ because $R$ is part of the challenge
+$e$. It&amp;rsquo;s hard to find an $R$ such that $R=sG-H(R||P||m)P$.&lt;/p>
+&lt;h3 id="p">$P$&lt;/h3>
+&lt;p>Let&amp;rsquo;s finally see what $P$ is doing in the challenge. Suppose that we
+didn&amp;rsquo;t have $P$ in the challenge, $e=H(R||m)$, and that the signature
+$(R,s)$ is valid for public key $P$ and message $m$. Then the
+signature $(R,s')=(R,s+ex)$, where $x$ is an arbitrary number, would
+be valid for a public key $P'=P+xG$ and message $m$. Let&amp;rsquo;s look at
+why:&lt;/p>
+&lt;p>$$
+\begin{align}
+&amp;amp;e = H(R || m) \\&lt;br>
+&amp;amp;s&amp;rsquo;G=R+eP' \iff (s+ex)G=R+e(P+xG) \iff \\&lt;br>
+&amp;amp;sG+exG=R+eP+exG \iff sG=R+eP+exG-exG \iff \\&lt;br>
+&amp;amp;sG=R+eP
+\end{align}
+$$&lt;/p>
+&lt;p>This is known as a related-key attack. If you&amp;rsquo;re familiar with how
+extended public key derivation in
+&lt;a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki">BIP32&lt;/a>
+works, you might see the potential danger. For a refresher, here&amp;rsquo;s the
+general idea:&lt;/p>
+&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/schnorr-basics/xpub-derivation.svg" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded"
+alt="Deriving a child extended public key from a parent extended public key, The orange paper strips are known as chain code, described in detail in Grokking Bitcoin. You just need to know that they&amp;amp;rsquo;re 256-bit numbers." width="80%" height="80%"/>&lt;figcaption>
+&lt;p>
+&lt;center>Deriving a child extended public key from a parent extended public key, The orange paper strips are known as chain code, described in detail in Grokking Bitcoin. You just need to know that they&amp;rsquo;re 256-bit numbers.
+&lt;/center>
+&lt;/p>
+&lt;/figcaption>
+&lt;/figure>
+&lt;p>This means that if an attacker knows the parent extended public key
+(xpub), and a valid signature for a child key, then the attacker can
+use this trick to forge signatures for the parent xpub, as well as any
+child xpubs that can be derived from the parent xpub. This is a
+problem not only for BIP32, but for many schemes using public key
+addition somehow, for example, Taproot
+(&lt;a href="https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki#constructing-and-spending-taproot-outputs">BIP341&lt;/a>). For
+a bit more details, please visit
+&lt;a href="https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki#Design">the Design section of BIP340&lt;/a>.&lt;/p>
+&lt;h2 id="next-steps">Next steps&lt;/h2>
+&lt;p>In the next post, I&amp;rsquo;ll show how Schnorr signatures can be used in a
+multisignature setting to produce a signature that looks just like a
+normal single signature. This is very practical in Bitcoin because it
+reduces resource requirements for verifying the blockchain.&lt;/p>
+&lt;p>&lt;em>This is a cross-post from &lt;a href="https://popeller.io/schnorr-basics">my personal blog&lt;/a>.&lt;/em>&lt;/p></description></item></channel></rss>

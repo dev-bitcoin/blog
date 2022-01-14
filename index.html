@@ -6,84 +6,141 @@
 <meta name=description content>
 <title>bitcoin-dev blog</title>
 <meta property="og:title" content="bitcoin-dev blog">
-<meta property="og:description" content>
+<meta property="og:description" content="Bitcoin developers blogging about their open-source projects. A technical open-content blog.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://bitcoin-dev.blog/">
-<meta name=twitter:card content="summary">
+<meta property="og:url" content="https://bitcoin-dev.blog/"><meta property="og:image" content="https://bitcoin-dev.blog/img/og-image.png">
+<meta name=twitter:card content="summary_large_image">
+<meta name=twitter:image content="https://bitcoin-dev.blog/img/og-image.png">
 <meta name=twitter:title content="bitcoin-dev blog">
-<meta name=twitter:description content>
-<link rel=alternate type=application/rss+xml href=https://bitcoin-dev.blog/index.xml title="bitcoin-dev blog">
-<link rel=stylesheet href=/css/bootstrap.min.css integrity=sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh crossorigin=anonymous>
+<meta name=twitter:description content="Bitcoin developers blogging about their open-source projects. A technical open-content blog.">
+<meta name=twitter:site content="@bitcoindevblog">
+<link rel=alternate type=application/rss+xml href=https://bitcoin-dev.blog/feed.xml title="bitcoin-dev blog">
+<link rel=stylesheet href=/css/bootstrap.min.css integrity=sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC crossorigin=anonymous>
 <link rel=stylesheet href=/css/syntax.css>
 <link rel=stylesheet href=/css/index.css>
 <link rel="shortcut icon" href=/favicon.png type=image/png>
 <link rel=icon href=/favicon.png type=image/png>
 <script async defer data-website-id=dfc2acc6-9237-4a34-bc2b-37967cb79a4c src=https://umami.b10c.me/umami.js></script>
 </head>
-<body><nav class="navbar container border-0 rounded-bottom shadow-sm mb-4">
+<body><nav class="navbar container rounded-bottom shadow-sm mb-4">
 <a class=navbar-brand href=/>
-<img src=/logo-512.png width=64 height=64 class="d-inline-block align-middle image-to-invert" alt="bitcoin-dev blog logo">
+<img src=/img/logo-large.png height=50 class="d-inline-block align-baseline image-to-invert mx-2" alt="bitcoin-dev blog logo">
+<div class=d-inline-block>
+<h1 class="d-block mb-0">bitcoin-dev blog</h1>
+<h6 class="d-block mb-0" style="font-size:calc(.7rem + .7vw)">by and for Bitcoin developers</h6>
+</div>
 </a>
-<div class=mr-auto>
-<div>
-<h1 class=mb-0>bitcoin-dev blog</h1>
-</div>
-<div>
-<span>A place for Bitcoin developers to share their projects.</span>
-</div>
-</div>
 <div class=ml-auto>
-<div class=btn-group-toggle data-toggle=buttons>
-<label class=btn>
-<input type=checkbox id=light-dark-mode-switch>
-<span class=dark-light-mode-symbol>🌣</span>
-<noscript>
-requires JS
-</noscript>
-</label>
+<div class="form-check form-switch">
+<input class=form-check-input type=checkbox id=light-dark-mode-switch>
+<noscript>requires JS</noscript>
 </div>
-<script>var html,darkmodeSwitch;const MODE_KEY="mode";html=document.querySelector("html"),darkmodeSwitch=document.getElementById("light-dark-mode-switch");function set_dark_mode(){darkmodeSwitch.checked=!0,html.classList.add("dark"),html.classList.remove("light"),localStorage.setItem(MODE_KEY,!0)}function set_light_mode(){darkmodeSwitch.checked=!1,html.classList.add("light"),html.classList.remove("dark"),localStorage.setItem(MODE_KEY,!1)}let storedMode=localStorage.getItem(MODE_KEY)=="true",perfersDarkmode=window.matchMedia('(prefers-color-scheme: dark)').matches;storedMode?(console.log("Dark-mode set in localStorage."),set_dark_mode()):perfersDarkmode?(console.log("User prefers dark-mode."),set_dark_mode()):set_light_mode(),darkmodeSwitch.addEventListener('change',a=>{a.currentTarget.checked?set_dark_mode():set_light_mode()})</script>
+<script>var html,darkmodeSwitch;const MODE_KEY="mode";html=document.querySelector("html"),darkmodeSwitch=document.getElementById("light-dark-mode-switch");function set_dark_mode(){darkmodeSwitch.checked=!0,html.classList.add("dark"),html.classList.remove("light"),localStorage.setItem(MODE_KEY,!0)}function set_light_mode(){darkmodeSwitch.checked=!1,html.classList.add("light"),html.classList.remove("dark"),localStorage.setItem(MODE_KEY,!1)}let isModeStored=localStorage.getItem(MODE_KEY)!==null,perfersDarkmode=window.matchMedia('(prefers-color-scheme: dark)').matches;if(isModeStored){let a=localStorage.getItem(MODE_KEY)=="true";console.log("Dark-mode set to",a,"in localStorage."),a?set_dark_mode():set_light_mode()}else perfersDarkmode?(console.log("User prefers dark-mode."),set_dark_mode()):set_light_mode();darkmodeSwitch.addEventListener('change',a=>{a.currentTarget.checked?set_dark_mode():set_light_mode()})</script>
 </div>
 </nav>
 <div id=content class=container>
 <main aria-role=main>
 <article class="py-3 px-4 mb-5 border-0 rounded shadow-sm">
 <div class="mx-lg-2 mx-md-1 text-justify">
-<p>The bitcoin-dev blog is a technical, open-content blog covering Open-Source projects that Bitcoin developers work on.
-Over the past years, the number of Bitcoin developers and Open-Source projects has been growing exponentially.
-It has gotten impossible to stay up-to-date on these all projects.</p>
-<p>These blog posts are for new contributors exploring the breadth of existing projects.
-For seasoned developers wanting to get short updates on projects.
-For our pseudonymous and anonymous friends who can&rsquo;t or don&rsquo;t want to attend CoreDev, BitDevs, other meetups, and conferences.
-For lurkers and the loud Bitcoin-Twitter voices.
-<strong>The blog posts are for every interested reader.</strong></p>
-<p>Grant recipients write blog posts to update the grantor and the community on their progress.
-Posts are written by long-time Bitcoin Core contributors implementing complex new features.
-By new Bitcoin Core developers <em>&lsquo;only&rsquo;</em> improving test coverage, by designers making the technical side of Bitcoin more accessible, by students, and by ex-Googler&rsquo;s.
-<strong>Everyone can submit a blog post covering their Bitcoin Open-Source project.</strong></p>
-<p>You can support open-source Bitcoin developers via <a href=https://bitcoindevlist.com/>Bitcoin Developer Donation Portal</a> and <a href=https://opensats.org/>OpenSats</a>.</p>
+<p>The bitcoin-dev blog is a technical, open-content blog covering topics and projects Bitcoin developers work on.</p>
+<p>These blog posts are for new contributors exploring the breadth of existing topics and projects,
+for seasoned developers wanting to get short updates,
+for our pseudonymous and anonymous friends who can&rsquo;t or don&rsquo;t want to attend CoreDev, BitDevs, other meetups, and conferences,
+for lurkers, and the loud Bitcoin-Twitter voices.
+Posts are written by new Bitcoin developers diving deep into a topic,
+by designers making the technical side of Bitcoin more accessible, by students,
+and by long-time Bitcoin Core contributors implementing complex new features.
+<strong>Everyone can submit a PR for a blog post covering a technical Bitcoin topic or an open-source Bitcoin project.</strong></p>
+<p>You can support open-source Bitcoin developers via <a href=https://bitcoindevlist.com/>Bitcoin Developer Donation Portal</a>, <a href=https://brink.dev/donate>Brink</a>, and <a href=https://opensats.org/>OpenSats</a>.</p>
 <p>If you want to submit a blog post, please read the contributing guidelines in <a href=https://github.com/dev-bitcoin/blog/blob/main/CONTRIBUTING.md>CONTRIBUTING.md</a>.
-If you are not sure if your topic fits, ask for feedback <a href="https://github.com/dev-bitcoin/blog/issues/new?template=blog-post-topic-review.md&title=%5BTopic+Review%5D">in a GitHub issue</a>.</p>
+If you are not sure if your topic fits, ask for feedback <a href="https://github.com/dev-bitcoin/blog/issues/new?template=blog-post-topic-review.md&title=%5BTopic+Review%5D">in a GitHub issue</a>.
+Cross-posts from your own blog are welcome!</p>
 </div>
 <hr>
 <section>
 <h4>Recent Posts</h4>
+<div class="card mb-4 border-0 rounded shadow-sm">
+<div class="row row-cols-1 row-cols-md-2">
+<div class="col col-md-4">
+<img src=/post-data/schnorr-basics/sig-overview.png style=object-fit:cover;height:100% class="card-img shadow-sm rounded" alt="Image for Schnorr basics">
+<a class="stretched-link umami--click--card-img-schnorr-basics" href=/blog/schnorr-basics/></a>
+</div>
+<div class="col col-md-8">
+<div class=card-body>
+<h4 class=card-title>Schnorr basics
+</h4>
+<p class=card-text>
+<p>If you&rsquo;re having a difficult time wrapping your head around Schnorr
+signatures, you&rsquo;re not alone. In this post, I attempt to explain
+Schnorr signatures at a level that I myself appreciate, and
+hopefully, you&rsquo;ll find it valuable too.</p>
+</p>
+</div>
+<a class="stretched-link umami--click--card-text-schnorr-basics" href=/blog/schnorr-basics/></a>
+</div>
+</div>
+</div>
+<div class="card mb-4 border-0 rounded shadow-sm">
+<div class="row row-cols-1 row-cols-md-2">
+<div class="col col-md-4">
+<img src=/post-data/compact-block-filters/cover.png style=object-fit:cover;height:100% class="card-img shadow-sm rounded" alt="Image for Compact Block Filters Deep Dive (BIP 158)">
+<a class="stretched-link umami--click--card-img-compact-block-filters-deep-dive-bip-158" href=/blog/bip158-deep-dive/></a>
+</div>
+<div class="col col-md-8">
+<div class=card-body>
+<h4 class=card-title>Compact Block Filters Deep Dive (BIP 158)
+</h4>
+<p class=card-text>
+In this post, I will briefly describe the needs of a bitcoin light client and why compact block filters satisfy these needs better than Bloom filters do. Then I will dive into exactly how compact block filters work and will follow this with a step-by-step guide for constructing such a filter from a …
+</p>
+</div>
+<a class="stretched-link umami--click--card-text-compact-block-filters-deep-dive-bip-158" href=/blog/bip158-deep-dive/></a>
+</div>
+</div>
+</div>
+<div class="card mb-4 border-0 rounded shadow-sm">
+<div class="row row-cols-1 row-cols-md-2">
+<div class="col col-md-4">
+<img src=/post-data/usdt-support-core/header.png style=object-fit:cover;height:100% class="card-img shadow-sm rounded" alt="Image for Userspace, Statically Defined Tracing support for Bitcoin Core">
+<a class="stretched-link umami--click--card-img-userspace-statically-defined-tracing-support-for-bitcoin-core" href=/blog/bitcoin-core-usdt-support/></a>
+</div>
+<div class="col col-md-8">
+<div class=card-body>
+<h4 class=card-title>Userspace, Statically Defined Tracing support for Bitcoin Core
+</h4>
+<p class=card-text>
+<p><em>This report updates on what 0xB10C, <a href=https://blog.coinbase.com/announcing-our-first-bitcoin-core-developer-grants-3d88559db068>Coinbase Crypto Community Fund grant recipient</a>,
+has been working on over the first half of his year-long Bitcoin development grant.
+This specifically covers his work on Userspace, Statically Defined Tracing support
+for Bitcoin Core. This report was published on …</em></p>
+</p>
+</div>
+<a class="stretched-link umami--click--card-text-userspace-statically-defined-tracing-support-for-bitcoin-core" href=/blog/bitcoin-core-usdt-support/></a>
+</div>
+</div>
+</div>
 </section>
 </article>
 </main>
 </div><footer class="container text-center my-3">
-<a rel=me href=https://twitter.com/bitcoindevblog class="m-2 umami--click--footer-twitter">
+<div class=my-3>
+<a rel=me href=https://twitter.com/bitcoindevblog class="m-2 image-to-invert umami--click--footer-twitter">
 <img src=/img/footer/twitter.svg alt="logo twitter" height=32px>
 </a>
-<a rel=me href=https://github.com/dev-bitcoin class="m-2 umami--click--footer-github">
+<a rel=me href=https://github.com/dev-bitcoin class="m-2 image-to-invert umami--click--footer-github">
 <img src=/img/footer/github.svg alt="logo github" height=32px>
 </a>
-<a href=/feed.xml class="m-2 umami--click--footer-rss-feed">
+<a href=/feed.xml class="m-2 image-to-invert umami--click--footer-rss-feed">
 <img src=/img/footer/rss.svg alt="logo rss" height=32px>
 </a>
-<a href=mailto:contact@bitcoin-dev.blog class="m-2 umami--click--footer-gmail">
+<a href=mailto:contact@bitcoin-dev.blog class="m-2 image-to-invert umami--click--footer-gmail">
 <img src=/img/footer/gmail.svg alt="logo mail" height=32px>
 </a>
+</div>
+<span class="small text-muted">
+This page uses a self-hosted <a href=https://umami.is class=umami--click--footer-umamiis>umami.is</a> instance as privacy-friendly visitor counter.
+The statistics are pubicly accessible <a href=https://umami.b10c.me/share/hwUBMhXc/bitcoin-dev-blog class=umami--click--footer-stats>here</a>.
+</span>
 </footer>
 </body>
 </html>

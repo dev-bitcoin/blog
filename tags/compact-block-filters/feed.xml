@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Compact block filters on bitcoin-dev blog</title><link>https://bitcoin-dev.blog/tags/compact-block-filters/</link><description>Recent content in Compact block filters on bitcoin-dev blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 13 Nov 2021 09:32:00 +0200</lastBuildDate><atom:link href="https://bitcoin-dev.blog/tags/compact-block-filters/feed.xml" rel="self" type="application/rss+xml"/><item><title>Compact Block Filters Deep Dive (BIP 158)</title><link>https://bitcoin-dev.blog/blog/bip158-deep-dive/</link><pubDate>Sat, 13 Nov 2021 09:32:00 +0200</pubDate><guid>https://bitcoin-dev.blog/blog/bip158-deep-dive/</guid><description>&lt;p>In this post, I will briefly describe the needs of a bitcoin light client and
+why compact block filters satisfy these needs better than Bloom filters do. Then
+I will dive into exactly how compact block filters work and will follow this
+with a step-by-step guide for constructing such a filter from a testnet block.&lt;/p>
+&lt;h4 id="the-purpose-of-block-filters">The purpose of block filters&lt;/h4>
+&lt;p>A bitcoin light client is software that can back a bitcoin wallet without
+storing the blockchain. This means that it needs to be able to broadcast
+transactions to the network, but most importantly, it must be able to pick up
+when there is a new transaction that is relevant to the wallet it is backing.
+There are two ways a transaction becomes relevant to a wallet: either it is
+sending money to the wallet (creating a new output to a wallet address), or it
+is spending one of the UTXOs that the wallet owns.&lt;/p>
+&lt;h4 id="what-was-wrong-with-bloom-filters">What was wrong with Bloom filters?&lt;/h4>
+&lt;p>Before &lt;a href="https://github.com/bitcoin/bips/blob/master/bip-0158.mediawiki">BIP 158&lt;/a> came along, the most widely used method for light clients was
+to use Bloom filters&lt;sup id="fnref:1">&lt;a href="#fn:1" class="footnote-ref" role="doc-noteref">1&lt;/a>&lt;/sup> as described in &lt;a href="https://github.com/bitcoin/bips/blob/master/bip-0037.mediawiki">BIP 37&lt;/a>. With a bloom
+filter, you take all the objects you are interested in (script pub keys spent or
+created), hash them a couple times and add the result of each to a bit map
+called a Bloom filter. This filter represents what you are interested in. You
+would then send this filter to a trusted bitcoin node and ask them to send you
+anything that matches your filter. The problem with this is that it is not very
+private since you are revealing some information to the bitcoin node you are
+sending this filter to. They can start getting an idea of the transactions you
+are interested in as well as the ones you are definitely not interested in. They
+can also just decide not to send you a transaction that matches the filter. So
+as you can see, it isn’t great for the light client. But it is also not great
+for the bitcoin node serving the light client. Each time you send them a filter,
+they have to load the relevant block from disk and determine which transactions
+match your filter. You could just spam them with fake filters and effectively
+DOS them. It takes very little energy to create a filter and lots to respond to
+it.&lt;/p>
+&lt;h4 id="introducing-compact-block-filters">Introducing Compact Block Filters:&lt;/h4>
+&lt;p>Ok, take two. What we want is:&lt;/p>
+&lt;ul>
+&lt;li>More privacy&lt;/li>
+&lt;li>Less asymmetry in the client - server work load. Ie, the server should be
+required to do way less work.&lt;/li>
+&lt;li>Less trust. The light client shouldn&amp;rsquo;t need to worry about the server holding
+back relevant transactions.&lt;/li>
+&lt;/ul>
+&lt;p>With compact block filters, the server (full node) will for each block construct
+a deterministic filter that includes all the objects in the block. This filter
+can be calculated once and persisted. If light clients request a filter for a
+block, there is no asymmetry since the server won&amp;rsquo;t have to do any more work
+than the client had to do when making the request. A light client can also
+choose to download the filters from multiple sources to ensure they match and
+can always download the full block and check for itself if the filter that the
+server provided was indeed correct given the block&amp;rsquo;s contents. Another bonus is
+that this is way more private. The light client no longer sends a fingerprint of
+the data it is interested in to the server. And so it becomes way more difficult
+to analyse the light client&amp;rsquo;s activity. The light client gets these filters from
+the server and checks for itself if any of its objects match what is seen in the
+filter, and if it does match, then the light client asks for the full block. One
+thing to note with this way of doing things is that full nodes serving the light
+clients will need to persist these filters, and the light clients might also want
+to persist a few filters and so it is important that the filters are as small as
+possible (hence the name, compact block filters).&lt;/p>
+&lt;p>Cool! Now we get to the cool stuff. How is this filter created? What does it
+look like?&lt;/p>
+&lt;p>What do we want?&lt;/p>
+&lt;ul>
+&lt;li>We want to put fingerprints of certain objects in the filter so that when
+clients are looking to see if a block maybe contains info relevant to them,
+they can take all their objects and check if the filter matches on those
+objects.&lt;/li>
+&lt;li>We want the filters to be as small as possible.&lt;/li>
+&lt;li>Effectively we want to sort of summarise some of the block info… in a size
+much much smaller than the block.&lt;/li>
+&lt;/ul>
+&lt;p>The info included in the basic filter is: every transaction&amp;rsquo;s input&amp;rsquo;s
+scriptPubKey being spent and every transaction&amp;rsquo;s output&amp;rsquo;s scriptPubKey being
+created. So something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">objects&lt;/span> = {&lt;span style="color:#a6e22e">spk1&lt;/span>, &lt;span style="color:#a6e22e">spk2&lt;/span>, &lt;span style="color:#a6e22e">spk3&lt;/span>, &lt;span style="color:#a6e22e">spk4&lt;/span>, &lt;span style="color:#f92672">...&lt;/span>, &lt;span style="color:#a6e22e">spkN&lt;/span>} &lt;span style="color:#75715e">// A list of N scriptPubKeys.
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Technically we could just stop here and say this list of scriptPubKeys is our
+filter. It is a condensed version of what is in the blockchain and contains the
+info the light client needs. With this list, they could tell with 100% certainty
+if something they are interested in is in the block. But it is still pretty big.
+So the next step is all about making this list as compact as possible. This is
+where things get insanely cool.&lt;/p>
+&lt;p>First, we convert each object into a number in a range such that the object
+numbers are uniformly distributed in that range: Let&amp;rsquo;s say we have 10 objects (N
+= 10), then we have some function that turns each of the objects into a number.
+Let’s say we chose the range [0, 10] since we have 10 objects. Now the
+hashing-plus-convert-to-number function we use will take each object and produce
+a number in the space from [0, 10]. It is uniformly distributed in this space.
+That means that, after ordering them, we will get (in the very, very ideal case)
+something like this:&lt;/p>
+&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/compact-block-filters/dense.jpeg" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="250" height="250"/>
+&lt;/figure>
+&lt;p>First of all, wow that is so great cause we have drastically decreased the size
+of an objects fingerprint. Each one is just a number now. Ok so, let this be
+our new filter:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">numbers&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> {&lt;span style="color:#ae81ff">1&lt;/span>,&lt;span style="color:#ae81ff">2&lt;/span>,&lt;span style="color:#ae81ff">3&lt;/span>,&lt;span style="color:#ae81ff">4&lt;/span>,&lt;span style="color:#ae81ff">5&lt;/span>,&lt;span style="color:#ae81ff">6&lt;/span>,&lt;span style="color:#ae81ff">7&lt;/span>,&lt;span style="color:#ae81ff">8&lt;/span>,&lt;span style="color:#ae81ff">9&lt;/span>,&lt;span style="color:#ae81ff">10&lt;/span>}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Now a light client downloads the filter and wants to see if one of the objects
+they are looking for is matched in this filter. All they need to do is take
+their objects and do the same hashing-plus-convert-to-number scheme and check if
+any of the numbers are in the filter. What is the problem? The filter has a
+number for each possible number in the space! Meaning that absolutely any object
+will match on this filter. In other words, the false-positive rate of this
+filter is 1. This is no good. We have lost too much info on our quest to
+compress the data in the filter. What we need is a higher false-positive (fp)
+rate. Ok so let’s say we want a false positive rate of 5. Then what we want is
+to have our objects be mapped uniformly to a space of [0, 50]:&lt;/p>
+&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/compact-block-filters/sparse.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="250" height="250"/>
+&lt;/figure>
+&lt;p>This is starting to look a bit better. If I am a client downloading this filter
+and I check if my objects are maybe in the filter, there will be a 1/5 chance
+that if it matches, it is a false positive. Great, so now we have mapped 10
+objects to numbers between 0 &amp;amp; 50. This new list of numbers is our filter.
+Again, we could stop here… but we can compress this even further!!&lt;/p>
+&lt;p>We have this list of ordered numbers that we know are distributed uniformly
+across this space between [0, 50]. We know that there are 10 items in the list.
+What this means is that we can deduce that the most likely &lt;em>difference&lt;/em> between
+each of the numbers in this ordered list is about 5. In general, if we have N
+items and a false positive rate of M, then the space will be of size N * M. So
+the numbers in the space can range from 0 to N * M, but the difference between
+each number (once ordered) will be roughly M. M will definitely be a smaller
+number to store than a number in the N * M space. So what we can do is instead
+of storing each number, we can instead store the difference of each successive
+number. In the above case, this would mean that instead of storing &lt;code>[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50]&lt;/code>, we just store &lt;code>[0, 5, 5, 5, 5, 5, 5, 5, 5, 5]&lt;/code>
+and then it is trivial to reconstruct the original list. As you can gather,
+storing the number 50 requires way more bits than storing the number 5. But why
+stop there? We can compress this even further!&lt;/p>
+&lt;p>This is where Golomb-Rice Coding comes in. This encoding works well for a list
+of numbers that will all very likely be close to some number. This is what we
+have! We have a list of numbers that will all very likely be close to 5 (or, in
+general, close to our FP rate of M) and so taking the quotient of any number in
+the list with that number (dividing each number by 5 and ignoring the remainder)
+will very likely be 0 (if the number is slightly less than 5) or 1 if the number
+is slightly more than 5. The quotient could be 2, 3, etc, but the likelihood
+decreases a lot. Great! So we can take advantage of this knowledge and say that
+we will encode a small quotient with the smallest number of bits that we can and
+use more bits to encode larger, unlikely quotients. Then we also need to encode
+the remainders (since we want to be able to reconstruct the values exactly), and
+these will always be numbers between [0, M-1] (in our case, [0, 4]). For
+encoding the quotients, we use the following mapping:&lt;/p>
+&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/compact-block-filters/quotient.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="125" height="125"/>
+&lt;/figure>
+&lt;p>The mapping above is easy to read: The number of &lt;code>1&lt;/code>s indicates the quotient we
+are encoding, and the &lt;code>0&lt;/code> indicates the end of the quotient encoding. So for each
+number in our list, we encode the quotient using the above table, and then we
+convert the remainder to binary using the number of bits needed to encode the
+maximum of M-1. In our case, that is 3 bits. Here is a table showing the
+encoding of the possible remainders in our example:&lt;/p>
+&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/compact-block-filters/remainder.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="125" height="125"/>
+&lt;/figure>
+&lt;p>So, in our ideal case example, our list of &lt;code>[0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]&lt;/code>
+can be encoded as follows:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#ae81ff">0000&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span> &lt;span style="color:#ae81ff">10000&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Before we move on to a more realistic example, let’s see if we can reconstruct
+our original list from this filter.&lt;/p>
+&lt;p>Ok so we have: “0000100001000010000100001000010000100001000010000”. We know how
+Golomb-Rice Coding encodes quotients and we also know that M is 5 (since this
+will be public knowledge known to everyone using this filter construction).
+Since we know M is 5, we know that 3 bits will be used to encode the remainders.
+So we can take our filter and produce the following quotient-remainder tuples:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">[(&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), (&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), (&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), (&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), (&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), (&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), (&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), (&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), (&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>), (&lt;span style="color:#ae81ff">1&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>)]
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>We know that the quotients were produced by dividing the numbers by M (5), so we can
+reconstruct these:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">[&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>]
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>And we know that this list represents differences of numbers, so we can
+reconstruct the OG list:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">[&lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#ae81ff">5&lt;/span>, &lt;span style="color:#ae81ff">10&lt;/span>, &lt;span style="color:#ae81ff">15&lt;/span>, &lt;span style="color:#ae81ff">20&lt;/span>, &lt;span style="color:#ae81ff">25&lt;/span>, &lt;span style="color:#ae81ff">30&lt;/span>, &lt;span style="color:#ae81ff">35&lt;/span>, &lt;span style="color:#ae81ff">40&lt;/span>, &lt;span style="color:#ae81ff">45&lt;/span>, &lt;span style="color:#ae81ff">50&lt;/span>]
+&lt;/code>&lt;/pre>&lt;/div>&lt;h4 id="a-more-realistic-example">A more realistic example&lt;/h4>
+&lt;p>We will now try to construct a filter from an actual Bitcoin testnet block. I&amp;rsquo;m
+going to use block &lt;a href="https://blockstream.info/testnet/block/000000000000002c06f9afaf2b2b066d4f814ff60cfbc4df55840975a00e035c">2101914&lt;/a>. Let’s see what its actual filter is:&lt;/p>
+&lt;pre tabindex="0">&lt;code>$ bitcoin-cli getblockhash 2101914
+000000000000002c06f9afaf2b2b066d4f814ff60cfbc4df55840975a00e035c
+$ bitcoin-cli getblockfilter 000000000000002c06f9afaf2b2b066d4f814ff60cfbc4df55840975a00e035c
+&lt;/code>&lt;/pre>&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">{
+&lt;span style="color:#f92672">&amp;#34;filter&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;5571d126b85aa79c9de56d55995aa292de0484b830680a735793a8c2260113148421279906f800c3b8c94ff37681fb1fd230482518c52df57437864023833f2f801639692646ddcd7976ae4f2e2a1ef58c79b3aed6a705415255e362581692831374a5e5e70d5501cdc0a52095206a15cd2eb98ac980c22466e6945a65a5b0b0c5b32aa1e0cda2545da2c4345e049b614fcad80b9dc9c903788163822f4361bbb8755b79c276b1cf7952148de1e5ee0a92f6d70c4f522aa6877558f62b34b56ade12fa2e61023abf3e570937bf379722bc1b0dc06ffa1c5835bb651b9346a270&amp;#34;&lt;/span>,
+&lt;span style="color:#f92672">&amp;#34;header&amp;#34;&lt;/span>: &lt;span style="color:#e6db74">&amp;#34;8d0cd8353342930209ac7027be150e679bbc7c65cc62bb8392968e43a6ea3bfe&amp;#34;&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Ok shweeeeeet, let’s see if we can reconstruct this filter from the block.&lt;/p>
+&lt;p>The full code for this can be found in this &lt;a href="https://github.com/ellemouton/bip158Example">github repo&lt;/a>. I will just show some
+pseudo code snippets here. The beef of the code is the function called
+&lt;code>constructFilter&lt;/code>, which takes in a bitcoin client that can be used to make calls
+to bitcoind and the block in question. The function looks something like this:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">constructFilter&lt;/span>(&lt;span style="color:#a6e22e">bc&lt;/span> &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">bitcoind&lt;/span>.&lt;span style="color:#a6e22e">Bitcoind&lt;/span>, &lt;span style="color:#a6e22e">block&lt;/span> &lt;span style="color:#a6e22e">bitcoind&lt;/span>.&lt;span style="color:#a6e22e">Block&lt;/span>) ([]&lt;span style="color:#66d9ef">byte&lt;/span>, &lt;span style="color:#66d9ef">error&lt;/span>) {
+&lt;span style="color:#75715e">// 1. Collect all the objects from the block that we want to add to the filter
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// 2. Convert all the objects to numbers and sort them.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// 3. Get the differences between the sorted numbers
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>
+&lt;span style="color:#75715e">// 4. Encode these differences using Golomb-Rice Coding
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Ok so step 1 is to collect all the objects from the block that we want to add to
+the filter. From the BIP, we know that these objects are all the scriptPubKeys
+being spent as well as all the scriptPubKeys of each output. Some extra rules
+from the BIP are that we skip the input for the coinbase transaction (since it
+is empty and meaningless), and we skip any OP_RETURN outputs. We also
+de-duplicate the data. So if there are two identical scriptPubKeys, we only
+include one in the filter.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#75715e">// The list of objects we want to include in our filter. These will be
+&lt;/span>&lt;span style="color:#75715e">// every scriptPubKey being spent as well as each output&amp;#39;s scriptPubKey.
+&lt;/span>&lt;span style="color:#75715e">// We use a map so that we can dedup any duplicate scriptPubKeys.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">objects&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make(&lt;span style="color:#66d9ef">map&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span>] &lt;span style="color:#66d9ef">struct&lt;/span>{})
+&lt;span style="color:#75715e">// Loop over every transaction in the block.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span>, &lt;span style="color:#a6e22e">tx&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">block&lt;/span>.&lt;span style="color:#a6e22e">Tx&lt;/span> {
+&lt;span style="color:#75715e">// Add the scriptPubKey of each of the transaction&amp;#39;s outputs
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// and add those to our list of objects.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">txOut&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">tx&lt;/span>.&lt;span style="color:#a6e22e">Vout&lt;/span> {
+&lt;span style="color:#a6e22e">scriptPubKey&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">txOut&lt;/span>.&lt;span style="color:#a6e22e">ScriptPubKey&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> len(&lt;span style="color:#a6e22e">scriptPubKey&lt;/span>) &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> {
+&lt;span style="color:#66d9ef">continue&lt;/span>
+}
+&lt;span style="color:#75715e">// We don&amp;#39;t add the output if it is an OP_RETURN (0x6a).
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">spk&lt;/span>[&lt;span style="color:#ae81ff">0&lt;/span>] &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0x6a&lt;/span> {
+&lt;span style="color:#66d9ef">continue&lt;/span>
+}
+&lt;span style="color:#a6e22e">objects&lt;/span>[&lt;span style="color:#a6e22e">skpStr&lt;/span>] = &lt;span style="color:#66d9ef">struct&lt;/span>{}{}
+}
+&lt;span style="color:#75715e">// We don&amp;#39;t add the inputs of the coinbase transaction.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> {
+&lt;span style="color:#66d9ef">continue&lt;/span>
+}
+&lt;span style="color:#75715e">// For each input, go and fetch the scriptPubKey that it is
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// spending.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">txIn&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">tx&lt;/span>.&lt;span style="color:#a6e22e">Vin&lt;/span> {
+&lt;span style="color:#a6e22e">prevTx&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">bc&lt;/span>.&lt;span style="color:#a6e22e">GetRawTransaction&lt;/span>(&lt;span style="color:#a6e22e">txIn&lt;/span>.&lt;span style="color:#a6e22e">Txid&lt;/span>)
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span>
+}
+&lt;span style="color:#a6e22e">scriptPubKey&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">prevTx&lt;/span>.&lt;span style="color:#a6e22e">Vout&lt;/span>[&lt;span style="color:#a6e22e">txIn&lt;/span>.&lt;span style="color:#a6e22e">Vout&lt;/span>].&lt;span style="color:#a6e22e">ScriptPubKey&lt;/span>
+&lt;span style="color:#66d9ef">if&lt;/span> len(&lt;span style="color:#a6e22e">scriptPubKey&lt;/span>) &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> {
+&lt;span style="color:#66d9ef">continue&lt;/span>
+}
+&lt;span style="color:#a6e22e">objects&lt;/span>[&lt;span style="color:#a6e22e">spkStr&lt;/span>] = &lt;span style="color:#66d9ef">struct&lt;/span>{}{}
+}
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Ok great, we have all the objects we care about. And now we can also define the
+variable N to be the length of the &lt;code>objects&lt;/code> map. In this example, N is 85.&lt;/p>
+&lt;p>The next step is to convert each of the objects to numbers spread uniformly
+across a range. Remember that this range depends on the false-positive rate we
+want. BIP158 defines the constant M to be 784931. This means that we want every
+1/784931 matches to be a false-positive. As we did in our earlier example, we
+take this fp rate of M and multiply it by N to get the range that we want all
+our numbers to lie in. We define this as F where F = M*N. In our case, we have
+85 objects, and so F=66719135. I am not going to go into the details of the
+function used to map our objects to numbers (you can check out the details of
+this in the code in the linked repo). All you need to know for now is that it
+takes in an object, the constant F, which defines the range that it needs to map
+the object to, and a key which is the block hash. Once we have all the numbers,
+we sort the list in ascending order, and then we also create a new list called
+&lt;code>differences&lt;/code> which will hold the differences between each sequential number in
+the sorted &lt;code>numbers&lt;/code> list.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">numbers&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make([]&lt;span style="color:#66d9ef">uint64&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#a6e22e">N&lt;/span>)
+&lt;span style="color:#75715e">// Iterate over all the objects, convert them to numbers lying uniformly in the
+&lt;/span>&lt;span style="color:#75715e">// range [0, F] and add them to the `numbers` list.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">o&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">objects&lt;/span> {
+&lt;span style="color:#75715e">// Using the given key, max number (F) and object bytes (o),
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// convert the object to a number between 0 and F.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">v&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">convertToNumber&lt;/span>(&lt;span style="color:#a6e22e">b&lt;/span>, &lt;span style="color:#a6e22e">F&lt;/span>, &lt;span style="color:#a6e22e">key&lt;/span>)
+&lt;span style="color:#a6e22e">numbers&lt;/span> = append(&lt;span style="color:#a6e22e">numbers&lt;/span>, &lt;span style="color:#a6e22e">v&lt;/span>)
+}
+&lt;span style="color:#75715e">// Sort the numbers.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">sort&lt;/span>.&lt;span style="color:#a6e22e">Slice&lt;/span>(&lt;span style="color:#a6e22e">numbers&lt;/span>, &lt;span style="color:#66d9ef">func&lt;/span>(&lt;span style="color:#a6e22e">i&lt;/span>, &lt;span style="color:#a6e22e">j&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>) &lt;span style="color:#66d9ef">bool&lt;/span> { &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">numbers&lt;/span>[&lt;span style="color:#a6e22e">i&lt;/span>] &amp;lt; &lt;span style="color:#a6e22e">numbers&lt;/span>[&lt;span style="color:#a6e22e">j&lt;/span>] })
+&lt;span style="color:#75715e">// Convert the list of numbers to a list of differences.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">differences&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make([]&lt;span style="color:#66d9ef">uint64&lt;/span>, &lt;span style="color:#a6e22e">N&lt;/span>)
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span>, &lt;span style="color:#a6e22e">num&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">numbers&lt;/span> {
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> {
+&lt;span style="color:#a6e22e">differences&lt;/span>[&lt;span style="color:#a6e22e">i&lt;/span>] = &lt;span style="color:#a6e22e">num&lt;/span>
+&lt;span style="color:#66d9ef">continue&lt;/span>
+}
+&lt;span style="color:#a6e22e">differences&lt;/span>[&lt;span style="color:#a6e22e">i&lt;/span>] = &lt;span style="color:#a6e22e">num&lt;/span> &lt;span style="color:#f92672">-&lt;/span> &lt;span style="color:#a6e22e">numbers&lt;/span>[&lt;span style="color:#a6e22e">i&lt;/span>&lt;span style="color:#f92672">-&lt;/span>&lt;span style="color:#ae81ff">1&lt;/span>]
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Awesome! Here is a graph showing the values in the &lt;code>numbers&lt;/code> and &lt;code>differences&lt;/code>
+lists:&lt;/p>
+&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/compact-block-filters/bitcoinExample.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="600" height="600"/>
+&lt;/figure>
+&lt;p>As you can see, the 85 numbers are really nicely uniformly distributed across
+the space! And this results in the values in the &lt;code>differences&lt;/code> list being pretty
+small.&lt;/p>
+&lt;p>The last step now is to use Golomb-Rice Coding to encode this &lt;code>differences&lt;/code>
+list. Recall from the earlier explanation that we need to divide each difference
+by its most likely value and then we encode that quotient along with the
+remainder. In my earlier example, I said that this most-likely value would be the
+M that we choose and that the remainder would then lie in the range [0, M].
+However, this is not what is done in the BIP as it was found&lt;sup id="fnref:2">&lt;a href="#fn:2" class="footnote-ref" role="doc-noteref">2&lt;/a>&lt;/sup> that
+this is, in fact, not the ideal way to choose the Golomb-Rice coder parameter when
+trying to optimize for the smallest possible size of the final encoded filter.
+And so, instead of using M, a new constant of P is defined and P^2 is used as the
+Golomb-Rice parameter. P is defined as 19. This means that each difference value
+is divided by 2^19 to get the quotient and remainder and the remainder is then
+encoded in binary in 19 bits.&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">filter&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">bstream&lt;/span>.&lt;span style="color:#a6e22e">NewBStreamWriter&lt;/span>(&lt;span style="color:#ae81ff">0&lt;/span>)
+&lt;span style="color:#75715e">// For each number in the differences list, calculate the quotient and
+&lt;/span>&lt;span style="color:#75715e">// remainder after dividing by 2^P.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">d&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">differences&lt;/span> {
+&lt;span style="color:#a6e22e">q&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">math&lt;/span>.&lt;span style="color:#a6e22e">Floor&lt;/span>(float64(&lt;span style="color:#a6e22e">d&lt;/span>)&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">math&lt;/span>.&lt;span style="color:#a6e22e">Exp2&lt;/span>(float64(&lt;span style="color:#a6e22e">P&lt;/span>)))
+&lt;span style="color:#a6e22e">r&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">d&lt;/span> &lt;span style="color:#f92672">-&lt;/span> uint64(&lt;span style="color:#a6e22e">math&lt;/span>.&lt;span style="color:#a6e22e">Exp2&lt;/span>(float64(&lt;span style="color:#a6e22e">P&lt;/span>))&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">q&lt;/span>)
+&lt;span style="color:#75715e">// Encode the quotient.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>; &lt;span style="color:#a6e22e">i&lt;/span> &amp;lt; int(&lt;span style="color:#a6e22e">q&lt;/span>); &lt;span style="color:#a6e22e">i&lt;/span>&lt;span style="color:#f92672">++&lt;/span> {
+&lt;span style="color:#a6e22e">filter&lt;/span>.&lt;span style="color:#a6e22e">WriteBit&lt;/span>(&lt;span style="color:#66d9ef">true&lt;/span>)
+}
+&lt;span style="color:#a6e22e">filter&lt;/span>.&lt;span style="color:#a6e22e">WriteBit&lt;/span>(&lt;span style="color:#66d9ef">false&lt;/span>)
+&lt;span style="color:#a6e22e">filter&lt;/span>.&lt;span style="color:#a6e22e">WriteBits&lt;/span>(&lt;span style="color:#a6e22e">r&lt;/span>, &lt;span style="color:#a6e22e">P&lt;/span>)
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Great stuff! Now when we print out this filter, we get:&lt;/p>
+&lt;pre tabindex="0">&lt;code>71d126b85aa79c9de56d55995aa292de0484b830680a735793a8c2260113148421279906f800c3b8c94ff37681fb1fd230482518c52df57437864023833f2f801639692646ddcd7976ae4f2e2a1ef58c79b3aed6a705415255e362581692831374a5e5e70d5501cdc0a52095206a15cd2eb98ac980c22466e6945a65a5b0b0c5b32aa1e0cda2545da2c4345e049b614fcad80b9dc9c903788163822f4361bbb8755b79c276b1cf7952148de1e5ee0a92f6d70c4f522aa6877558f62b34b56ade12fa2e61023abf3e570937bf379722bc1b0dc06ffa1c5835bb651b9346a270
+&lt;/code>&lt;/pre>&lt;p>Apart from the first two bytes, this matches the filter we got from bitcoind
+exactly! Why the 2 byte difference? The BIP says that the N value needs to be
+encoded in CompactSize format and appended to the front of the filter so that it
+can be decoded by the receiver. This is done as follows:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">fd&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">filter&lt;/span>.&lt;span style="color:#a6e22e">Bytes&lt;/span>()
+&lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">buffer&lt;/span> &lt;span style="color:#a6e22e">bytes&lt;/span>.&lt;span style="color:#a6e22e">Buffer&lt;/span>
+&lt;span style="color:#a6e22e">buffer&lt;/span>.&lt;span style="color:#a6e22e">Grow&lt;/span>(&lt;span style="color:#a6e22e">wire&lt;/span>.&lt;span style="color:#a6e22e">VarIntSerializeSize&lt;/span>(uint64(&lt;span style="color:#a6e22e">N&lt;/span>)) &lt;span style="color:#f92672">+&lt;/span> len(&lt;span style="color:#a6e22e">fd&lt;/span>))
+&lt;span style="color:#a6e22e">err&lt;/span> = &lt;span style="color:#a6e22e">wire&lt;/span>.&lt;span style="color:#a6e22e">WriteVarInt&lt;/span>(&lt;span style="color:#f92672">&amp;amp;&lt;/span>&lt;span style="color:#a6e22e">buffer&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, uint64(&lt;span style="color:#a6e22e">N&lt;/span>))
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span>
+}
+&lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> = &lt;span style="color:#a6e22e">buffer&lt;/span>.&lt;span style="color:#a6e22e">Write&lt;/span>(&lt;span style="color:#a6e22e">fd&lt;/span>)
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span>
+}
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If we print out the filter now, we get one that matches the one we got from
+bitcoind exactly:&lt;/p>
+&lt;pre tabindex="0">&lt;code>5571d126b85aa79c9de56d55995aa292de0484b830680a735793a8c2260113148421279906f800c3b8c94ff37681fb1fd230482518c52df57437864023833f2f801639692646ddcd7976ae4f2e2a1ef58c79b3aed6a705415255e362581692831374a5e5e70d5501cdc0a52095206a15cd2eb98ac980c22466e6945a65a5b0b0c5b32aa1e0cda2545da2c4345e049b614fcad80b9dc9c903788163822f4361bbb8755b79c276b1cf7952148de1e5ee0a92f6d70c4f522aa6877558f62b34b56ade12fa2e61023abf3e570937bf379722bc1b0dc06ffa1c5835bb651b9346a270
+&lt;/code>&lt;/pre>&lt;p>Yay!&lt;/p>
+&lt;p>However, from my understanding, there is no need to add N to the filter. If you
+know the value of P, then you can figure out the value of N. Let’s do this now
+by seeing if we can take the filter above, and reconstruct the original list of
+numbers:&lt;/p>
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-go" data-lang="go">&lt;span style="color:#a6e22e">b&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">bstream&lt;/span>.&lt;span style="color:#a6e22e">NewBStreamReader&lt;/span>(&lt;span style="color:#a6e22e">filter&lt;/span>)
+&lt;span style="color:#66d9ef">var&lt;/span> (
+&lt;span style="color:#a6e22e">numbers&lt;/span> []&lt;span style="color:#66d9ef">uint64&lt;/span>
+&lt;span style="color:#a6e22e">prevNum&lt;/span> &lt;span style="color:#66d9ef">uint64&lt;/span>
+)
+&lt;span style="color:#66d9ef">for&lt;/span> {
+&lt;span style="color:#75715e">// Read a quotient from the stream. Read until we encounter
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// a &amp;#39;0&amp;#39; bit indicating the end of the quotient. The number of
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// &amp;#39;1&amp;#39;s we encounter before reaching the &amp;#39;0&amp;#39; defines the
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// quotient.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">q&lt;/span> &lt;span style="color:#66d9ef">uint64&lt;/span>
+&lt;span style="color:#a6e22e">c&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span>.&lt;span style="color:#a6e22e">ReadBit&lt;/span>()
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span>
+}
+&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">c&lt;/span> {
+&lt;span style="color:#a6e22e">q&lt;/span>&lt;span style="color:#f92672">++&lt;/span>
+&lt;span style="color:#a6e22e">c&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> = &lt;span style="color:#a6e22e">b&lt;/span>.&lt;span style="color:#a6e22e">ReadBit&lt;/span>()
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">errors&lt;/span>.&lt;span style="color:#a6e22e">Is&lt;/span>(&lt;span style="color:#a6e22e">err&lt;/span>, &lt;span style="color:#a6e22e">io&lt;/span>.&lt;span style="color:#a6e22e">EOF&lt;/span>) {
+&lt;span style="color:#66d9ef">break&lt;/span>
+} &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span>
+}
+}
+&lt;span style="color:#75715e">// The following P bits are the remainder encoded as binary.
+&lt;/span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">r&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span>.&lt;span style="color:#a6e22e">ReadBits&lt;/span>(&lt;span style="color:#a6e22e">P&lt;/span>)
+&lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">errors&lt;/span>.&lt;span style="color:#a6e22e">Is&lt;/span>(&lt;span style="color:#a6e22e">err&lt;/span>, &lt;span style="color:#a6e22e">io&lt;/span>.&lt;span style="color:#a6e22e">EOF&lt;/span>) {
+&lt;span style="color:#66d9ef">break&lt;/span>
+} &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
+&lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span>
+}
+&lt;span style="color:#a6e22e">n&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">q&lt;/span>&lt;span style="color:#f92672">*&lt;/span>uint64(&lt;span style="color:#a6e22e">math&lt;/span>.&lt;span style="color:#a6e22e">Exp2&lt;/span>(float64(&lt;span style="color:#a6e22e">P&lt;/span>))) &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#a6e22e">r&lt;/span>
+&lt;span style="color:#a6e22e">num&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">n&lt;/span> &lt;span style="color:#f92672">+&lt;/span> &lt;span style="color:#a6e22e">prevNum&lt;/span>
+&lt;span style="color:#a6e22e">numbers&lt;/span> = append(&lt;span style="color:#a6e22e">numbers&lt;/span>, &lt;span style="color:#a6e22e">num&lt;/span>)
+&lt;span style="color:#a6e22e">prevNum&lt;/span> = &lt;span style="color:#a6e22e">num&lt;/span>
+}
+&lt;span style="color:#a6e22e">fmt&lt;/span>.&lt;span style="color:#a6e22e">Println&lt;/span>(&lt;span style="color:#a6e22e">numbers&lt;/span>)
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The above produces the same list of numbers that we had before and we were able
+to reconstruct this without the knowledge of N. So I am not sure why it was
+decided that N should be added to the filter. If anyone knows why it was
+required to add N to the filter, please let me know!&lt;/p>
+&lt;p>Cool, that was fun! Thanks for reading. This is a &lt;a href="https://www.ellemouton.com/blog/view/9">cross-post&lt;/a> from my
+&lt;a href="https://www.ellemouton.com">website&lt;/a>, where you can find many more Bitcoin and Lightning related technical
+posts. Until next time&amp;hellip; Yeeeeet!&lt;/p>
+&lt;section class="footnotes" role="doc-endnotes">
+&lt;hr>
+&lt;ol>
+&lt;li id="fn:1" role="doc-endnote">
+&lt;p>&lt;a href="https://en.wikipedia.org/wiki/Bloom_filter">https://en.wikipedia.org/wiki/Bloom_filter&lt;/a>&amp;#160;&lt;a href="#fnref:1" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li id="fn:2" role="doc-endnote">
+&lt;p>&lt;a href="https://gist.github.com/sipa/576d5f09c3b86c3b1b75598d799fc845">https://gist.github.com/sipa/576d5f09c3b86c3b1b75598d799fc845&lt;/a>&amp;#160;&lt;a href="#fnref:2" class="footnote-backref" role="doc-backlink">&amp;#x21a9;&amp;#xfe0e;&lt;/a>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/section></description></item></channel></rss>

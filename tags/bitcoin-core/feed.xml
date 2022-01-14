@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Bitcoin Core on bitcoin-dev blog</title><link>https://bitcoin-dev.blog/tags/bitcoin-core/</link><description>Recent content in Bitcoin Core on bitcoin-dev blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 30 Aug 2021 09:00:00 +0200</lastBuildDate><atom:link href="https://bitcoin-dev.blog/tags/bitcoin-core/feed.xml" rel="self" type="application/rss+xml"/><item><title>Userspace, Statically Defined Tracing support for Bitcoin Core</title><link>https://bitcoin-dev.blog/blog/bitcoin-core-usdt-support/</link><pubDate>Mon, 30 Aug 2021 09:00:00 +0200</pubDate><guid>https://bitcoin-dev.blog/blog/bitcoin-core-usdt-support/</guid><description>&lt;p>&lt;em>This report updates on what 0xB10C, &lt;a href="https://blog.coinbase.com/announcing-our-first-bitcoin-core-developer-grants-3d88559db068">Coinbase Crypto Community Fund grant recipient&lt;/a>,
+has been working on over the first half of his year-long Bitcoin development grant.
+This specifically covers his work on Userspace, Statically Defined Tracing support
+for Bitcoin Core. This report was published on &lt;a href="https://b10c.me/blog/008-bitcoin-core-usdt-support/">0xB10Cs blog&lt;/a> and the &lt;a href="https://blog.coinbase.com/userspace-statically-defined-tracing-support-for-bitcoin-core-e4076cd3e07">Coinbase blog&lt;/a> too.&lt;/em>&lt;/p>
+&lt;p>The reference implementation to the Bitcoin protocol rules, Bitcoin Core, is
+the most widely used software to interact with the Bitcoin network. Bitcoin
+Core is, however, a black box to most users. While information can be queried
+via the RPC interface or searched in the debug log, there is no defined interface
+for real-time insights into process internals. Yet, some users could benefit
+from more observability into their node. Hobbyists and companies running Bitcoin
+Core in production want to include their nodes in their real-time monitoring.
+Developers need visibility into test deployments to evaluate, review, debug,
+and benchmark changes. Researchers want to observe and analyze the behavior
+of nodes on the peer-to-peer network. Exchanges and other services handling
+large sums of bitcoin want to detect attacks and other anomalies early.&lt;/p>
+&lt;h3 id="peeking-inside-with-userspace-statically-defined-tracing">Peeking inside with Userspace, Statically Defined Tracing&lt;/h3>
+&lt;!-- raw HTML omitted -->
+&lt;p>The &lt;a href="https://ebpf.io">eBPF&lt;/a> technology present in the Linux kernel can be used for
+observability into userspace applications. The technology allows
+running a small, sandboxed program in the Linux kernel, which can hook
+into predefined tracepoints in running processes. Once hooked into a
+tracepoint, the program is executed each time the tracepoint is reached.
+Tracepoints can pass data, for example, application state. Tracing scripts
+can further process the data. The practice of hooking into tracepoints in
+userspace applications is known as Userspace, Statically Defined Tracing
+(USDT). For example, these tracepoints are also included in PostgreSQL,
+MySQL, Python, NodeJS, Ruby, PHP, and libraries like libc, libpthread,
+and libvirt.&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>The static tracepoints can be leveraged by Bitcoin Core users wishing for
+more insights into their node. Adding USDT support &lt;a href="https://github.com/bitcoin/bitcoin/pull/19866">did not require intrusive
+changes&lt;/a>, and no custom tooling had to be written. When not used, the performance
+impact of the tracepoints is minimal to non-existent. Only privileged processes
+can hook into the tracepoints, no information leaks to other processes on the host.
+These properties make Userspace, Statically Defined Tracing a good fit for Bitcoin
+Core.&lt;/p>
+&lt;!-- raw HTML omitted -->
+&lt;p>For example, I &lt;a href="https://github.com/bitcoin/bitcoin/commit/4224dec22baa66547303840707cf1d4f15a49b20">placed two tracepoints&lt;/a> in the peer-to-peer message handling
+code of Bitcoin Core. For each inbound and outbound P2P message, the tracepoints
+pass information about the peer, the connection, and the message. This data can
+be filtered and processed by tracing scripts. As a demo, I have built a P2P Monitor
+that shows the communication between two peers in real-time. Users can find this
+script alongside other &lt;a href="https://github.com/bitcoin/bitcoin/tree/master/contrib/tracing">USDT examples&lt;/a> in the &lt;code>contrib/tracing/&lt;/code> directory of the
+Bitcoin Core repository.&lt;/p>
+&lt;blockquote class="twitter-tweet" data-dnt="true">&lt;p lang="en" dir="ltr">Realtime Bitcoin Core P2P monitoring with User-Space, Statically Defined Tracing (USDT) and eBPF.&lt;br>&lt;br>This is one of the examples from &lt;a href="https://t.co/1QGb7jgsnZ">https://t.co/1QGb7jgsnZ&lt;/a> (with added IP masking). &lt;a href="https://t.co/E5mREYknEm">pic.twitter.com/E5mREYknEm&lt;/a>&lt;/p>&amp;mdash; b10c (@0xB10C) &lt;a href="https://twitter.com/0xB10C/status/1396889721859715077?ref_src=twsrc%5Etfw">May 24, 2021&lt;/a>&lt;/blockquote>
+&lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8">&lt;/script>
+&lt;h3 id="use-cases-for-userspace-statically-defined-tracing">Use-cases for Userspace, Statically Defined Tracing&lt;/h3>
+&lt;p>I list some use-cases for Userspace, Statically Defined Tracing
+I have thought about or worked on. With only three tracepoints merged,
+there is plenty of room for developers to add new tracepoints and
+get creative with tracing scripts. &lt;a href="https://github.com/bitcoin/bitcoin/issues/20981">Issue #20981&lt;/a> contains discussion
+and ideas for additional tracepoints that can be implemented.&lt;/p>
+&lt;p>Researchers and developers can use the P2P message tracepoints to
+monitor P2P network anomalies in real-time. One example could be
+detecting the recent &lt;code>addr&lt;/code> message flooding as reported in this
+&lt;a href="https://bitcointalk.org/index.php?topic=5348856.0">bitcointalk.org post&lt;/a>. The messages were announcing random IP
+addresses not belonging to nodes on the Bitcoin network. The flooding
+has been &lt;a href="https://arxiv.org/abs/2108.00815">covered&lt;/a> in detail by Grundmann and Baumstark. They
+discuss that the attacker could obtain the number of connected peers and
+learn about other addresses, including Tor addresses, the node is listening
+on. This would reduce the privacy of the node operator. It&amp;rsquo;s important to
+stay vigilant to these attacks, discuss them, and then, if needed, react
+to them.&lt;/p>
+&lt;p>Similarly, I have been instrumenting the Bitcoin Core network address manager
+with tracepoints. The addrman keeps track of gossiped network addresses for
+potential outbound peers connections a node makes. It&amp;rsquo;s designed to be resiliant
+against &lt;a href="https://cs-people.bu.edu/heilman/eclipse/">Eclipse Attacks&lt;/a>, where a node only has connections to peers controlled
+by the attacker. The attacker can choose which information to feed to the node,
+enabling, for example, double-spending attacks. Information about the addresses
+in the addrman might help detect the build-up of an eclipse attack when combined
+with other data.&lt;/p>
+&lt;p>Additionally, these addrman tracepoints can be helpful during debugging and
+code review. To showcase this, I build a tool that visualizes the addresses
+in the addrman data structure based on the data submitted to the tracepoints.&lt;/p>
+&lt;blockquote class="twitter-tweet" data-dnt="true">&lt;p lang="en" dir="ltr">Quiz: Which Bitcoin Core data-structure does this visualization show? &lt;a href="https://t.co/U6cnHBFWWT">pic.twitter.com/U6cnHBFWWT&lt;/a>&lt;/p>&amp;mdash; b10c (@0xB10C) &lt;a href="https://twitter.com/0xB10C/status/1407019872681332742?ref_src=twsrc%5Etfw">June 21, 2021&lt;/a>&lt;/blockquote>
+&lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8">&lt;/script>
+&lt;!-- raw HTML omitted -->
+&lt;p>A Prometheus metric exporter can also build on top of the tracepoints
+without requiring additional code in Bitcoin Core. There already exist
+RPC-based Prometheus exporters and projects like &lt;a href="https://statoshi.info/">Statoshi&lt;/a>. However,
+RPC-based exporters are limited by the information exposed via the RPC
+interface, and Statoshi is large a patch-set that requires maintenance
+on each Bitcoin Core release. I have published an experimental USDT-based
+exporter called &lt;a href="https://github.com/0xb10c/bitcoind-observer">bitcoind-observer&lt;/a> that hooks into the three currently
+merged tracepoints and serves metrics in the Prometheus format. The exporter
+can be used by everyone currently running a Bitcoin Core node compiled with
+USDT support. A demo is available on &lt;a href="https://bitcoind.observer">bitcoind.observer&lt;/a>. I&amp;rsquo;ve recently used
+this to benchmark the bandwidth usage of &lt;a href="https://github.com/bitcoin/bitcoin/pull/21515">an implementation&lt;/a> of &lt;a href="https://arxiv.org/abs/1905.10518">Erlay:
+Bandwidth-Efficient Transaction Relay for Bitcoin&lt;/a>. Initial results can be
+found &lt;a href="https://github.com/naumenkogs/txrelaysim/issues/8#issuecomment-903255752">here&lt;/a>.&lt;/p>
+&lt;p>The already existing tracepoint &lt;code>validation:block_connected&lt;/code> can be used
+to benchmarking block validation. This allows, for example, to compare
+the initial block download performance between different patches and can
+aid in detecting performance improvements and regressions. For example,
+the &lt;a href="https://github.com/chaincodelabs/bitcoinperf">bitcoinperf&lt;/a> project might benefit from such tracepoints. I&amp;rsquo;ve used
+the tracepoint to &lt;a href="https://github.com/bitcoin/bitcoin/pull/22702#issuecomment-900662089">benchmark&lt;/a> Martin Ankerls pull request &lt;a href="https://github.com/bitcoin/bitcoin/pull/22702">#22702&lt;/a>. If
+merged, the changes he proposes would result in a substantial block
+validation speed up and reduction in memory usage.&lt;/p>
+&lt;h3 id="next-steps">Next steps&lt;/h3>
+&lt;p>I will collect further ideas for tracepoints and implement them alongside
+example tracing scripts and more tooling. This will also involve
+communicating with other Bitcoin and Bitcoin Core developers about
+which tracepoints could be helpful in their projects. An example is
+Antoine Riard&amp;rsquo;s &lt;a href="https://github.com/bitcoin/bitcoin/pull/18987">cross-layer anomaly detection watchdog&lt;/a> which he
+initially proposed as a new, internal module to Bitcoin Core. However,
+many of the required events and metrics can be collected by hooking into
+tracepoints. This means the watchdog could be an external runtime, which
+would speed up the watchdog development and requires less code and
+maintenance on the Bitcoin Core side.&lt;/p>
+&lt;p>If everything goes according to plan, the v23.0 release of Bitcoin Core,
+expected in early 2022, will include the first set of tracepoints. A
+goal is to enable USDT support in release builds by default, which still needs
+some work. Additionally, the tracepoint API should be semi-stable and thus
+needs testing.&lt;/p>
+&lt;hr>
+&lt;p>&lt;strong>In short&lt;/strong>: I have been adding tracepoints to Bitcoin Core that users can hook
+into to get insights into the internal state. The tracepoints are based on Linux
+kernel technology and do not require intrusive changes or custom tooling. The
+groundwork is done. Now further tracepoints can be added, and tooling can be written.&lt;/p></description></item></channel></rss>
