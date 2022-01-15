@@ -105,7 +105,7 @@ on elliptic curve points:
 
 $$ (s1 + s2)\*G = s1\*G + s2\*G $$
 
-where $s1$ and $s2$ are scalars, and $G$ is an elliptic curve.
+where $s1$ and $s2$ are scalars, and $G$ is an elliptic curve generator point.
 
 The basic idea for selling content is as follows:
 
