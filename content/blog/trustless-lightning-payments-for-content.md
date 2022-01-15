@@ -349,6 +349,8 @@ There is a working implementation of the core Squeak Protocol as a Python librar
 
 And there is an implementation of a full node running the Squeak Protocol here: https://github.com/squeaknode/squeaknode
 
+You can also run your own Squeaknode instance on [Umbrel](https://getumbrel.com/), but
+it is not yet completely trustless because it still uses HTLCs.
 
 [github repo]: https://github.com/squeaknode/squeak
 [cross-post]: https://squeaknode.org/lightning/ptlc/bitcoin/2022/01/07/trustless-lightning
