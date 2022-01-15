@@ -13,7 +13,7 @@ tags:
 
 mathjax: true
 images:
-  - "/post-data/trustless-lightning-payments/ptlc-example-2.png"
+  - "/post-data/trustless-lightning-payments/cover-image-2.png"
 
 appearedfirston:
     label: "squeaknode.org"
@@ -74,7 +74,7 @@ the content.
 <!-- In the current implementation of Lightning in LND (using HTLCs), the preimage -->
 <!-- would be specified in the `r_preimage` field of the `AddInvoice` RPC method. -->
 
-{{< center-figure src="/post-data/trustless-lightning-payments/htlc-example-3.png" height=600 width=600 >}}
+{{< center-figure src="/post-data/trustless-lightning-payments/htlc-example-4.png" height=600 width=600 >}}
 
 Unfortunately, this approach requires the consumer to trust the honesty of the
 content seller. A malicious seller could create an invoice using an invalid
@@ -125,7 +125,7 @@ If Carol tries to give Bob an invalid invoice, Bob will know before he pays the 
 
 The above example assumes that Bob is able to trust that the value of $p1$ is valid.
 
-{{< center-figure src="/post-data/trustless-lightning-payments/ptlc-example-2.png" height=600 width=600 >}}
+{{< center-figure src="/post-data/trustless-lightning-payments/ptlc-example-3.png" height=600 width=600 >}}
 
 Now any node in the network can relay content from any creator, and earn a profit by
 selling it trustlessly to any consumer. The consumer does not have to trust that the
