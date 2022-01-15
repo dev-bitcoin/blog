@@ -94,10 +94,10 @@ network, where all connections are assumed to be trustless.
 Fortunately, there is a way to make the payment trustless for both the buyer
 and the seller, but it requires that Lightning use PTLC payment channels.
 
-With PTLCs, the seller specifies a 32-byte scalar value (`s`) as the "preimage"
+With PTLCs, the seller specifies a 32-byte scalar value ($s$) as the "preimage"
 at the creation-time of the invoice. When the buyer decodes the invoice payment
-string, they will obtain the payment point (`p = s*G`). The buyer will only
-obtain the "preimage" `s` after the payment is settled.
+string, they will obtain the payment point ($p = s*G$). The buyer will only
+obtain the "preimage" $s$ after the payment is settled.
 
 So now that we know that PTLC invoices use elliptic curve points, we can
 take advantage of the distributive property of scalar multiplication
@@ -105,26 +105,26 @@ on elliptic curve points:
 
 $$ (s1 + s2)\*G = s1\*G + s2\*G $$
 
-where `s1` and `s2` are scalars, and `G` is an elliptic curve.
+where $s1$ and $s2$ are scalars, and $G$ is an elliptic curve.
 
 The basic idea for selling content is as follows:
 
 * Alice has a piece of content she wants to be sellable.
-* Alice generates a scalar value `s1` to use as a symmetric encryption/decryption key, and encrypts the content.
-* Alice calculates the point `p1` on an elliptic curve `G` by calculating `p1 = s1*G`.
-* Alice makes `p1` publicly available for anyone interested in buying the content.
+* Alice generates a scalar value $s1$ to use as a symmetric encryption/decryption key, and encrypts the content.
+* Alice calculates the point $p1$ on an elliptic curve $G$ by calculating $p1 = s1*G$.
+* Alice makes $p1$ publicly available for anyone interested in buying the content.
 * Alice shares the encrypted content with a relay named Carol.
 * Bob downloads the encrypted content from Carol, and requests an invoice to unlock the content.
-* Carol generates a new scalar value `s2`, and creates a *PTLC* Lightning invoice with `s1 + s2` as the preimage.
-* Carol sends Bob `s2` and the Lightning invoice as a payment request string.
-* Bob decodes the payment request string to get the payment point of the invoice, call it `p3`.
-* Bob calculates `s2*G`. If it is equal to `p3 - p1`, then Bob knows that the invoice is valid.
-* Bob pays the Lightning invoice, and gets the value of `s1 + s2` as the preimage.
-* Bob calculates `s1 = (s1 + s2) - s2` to get the decryption key, and decrypts the content.
+* Carol generates a new scalar value $s2$, and creates a *PTLC* Lightning invoice with $s1 + s2$ as the preimage.
+* Carol sends Bob $s2$ and the Lightning invoice as a payment request string.
+* Bob decodes the payment request string to get the payment point of the invoice, call it $p3$.
+* Bob calculates $s2*G$. If it is equal to $p3 - p1$, then Bob knows that the invoice is valid.
+* Bob pays the Lightning invoice, and gets the value of $s1 + s2$ as the preimage.
+* Bob calculates $s1 = (s1 + s2) - s2$ to get the decryption key, and decrypts the content.
 
 If Carol tries to give Bob an invalid invoice, Bob will know before he pays the invoice.
 
-The above example assumes that Bob is able to trust that the value of `p1` is valid.
+The above example assumes that Bob is able to trust that the value of $p1$ is valid.
 
 {{< center-figure src="/post-data/trustless-lightning-payments/ptlc-example-2.png" caption="" height=600 width=600 >}}
 
@@ -310,9 +310,9 @@ Bob can now browse through the offers, and make a payment to any peer that offer
 
 When Bob makes a Lightning payment to one of the sellers, he will obtain the preimage of the invoice. This preimage can be used to get the decryption key:
 
-* The preimage is `s1 + s2`, as described earlier.
-* Bob already knows `s2`, because the seller sent it to him.
-* Bob calculates `s1 = (s1 + s2) - s2` to obtain the decryption key.
+* The preimage is $s1 + s2$, as described earlier.
+* Bob already knows $s2$, because the seller sent it to him.
+* Bob calculates $s1 = (s1 + s2) - s2$ to obtain the decryption key.
 * Bob can then decrypt the content of the squeak.
 
 Now Bob can read the content of the squeak!
