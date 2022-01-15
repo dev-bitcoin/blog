@@ -151,12 +151,14 @@ and verify several properties of the squeak:
 elliptic curve point. Any lightning invoice that matches the payment point
 is guaranteed to decrypt the content.
 
-After these properties have been verified, the consumer can request an invoice from
-the seller that will unlock the decrypted content of the squeak (after payment):
+When a user downloads a squeak from another peer onto their node, the squeak
+contains enough information to display in a timeline UI.
+
+However, a newly downloaded squeak will display as locked.
 
 {{< center-figure src="/post-data/trustless-lightning-payments/locked-squeak.png" height=600 width=600 >}}
 
-If the consumer then clicks the "buy" button, they will be presented with an offer
+If the consumer then clicks the "buy" button, they will be presented with an invoice
 that they received from the seller:
 
 {{< center-figure src="/post-data/trustless-lightning-payments/received-offer.png" height=600 width=600 >}}
