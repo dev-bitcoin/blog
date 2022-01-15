@@ -144,11 +144,12 @@ With the Squeak Protocol, any user can download an encrypted post (called a "squ
 and verify several properties of the squeak:
 
 1) The squeak has a unique hash that is the same across all nodes
-2) The squeak was created and signed by a certain person.
-3) The squeak was created after a certain time.
+2) The squeak was created and signed by a certain person, and the original content has not been altered.
+3) The squeak was created after a certain time (based on the block hash).
 4) The squeak was created in reply to another squeak (or not).
 5) The squeak was encrypted using a scalar that corresponds to a certain
-elliptic curve point.
+elliptic curve point. Any lightning invoice that matches the payment point
+is guaranateed to decrypt the content.
 
 After these properties have been verified, the consumer can request an invoice from
 the seller that will unlock the decrypted content of the squeak (after payment):
