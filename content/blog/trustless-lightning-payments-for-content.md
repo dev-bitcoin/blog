@@ -149,7 +149,7 @@ and verify several properties of the squeak:
 4) The squeak was created in reply to another squeak (or not).
 5) The squeak was encrypted using a scalar that corresponds to a certain
 elliptic curve point. Any lightning invoice that matches the payment point
-is guaranateed to decrypt the content.
+is guaranteed to decrypt the content.
 
 After these properties have been verified, the consumer can request an invoice from
 the seller that will unlock the decrypted content of the squeak (after payment):
