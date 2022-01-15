@@ -10,7 +10,6 @@ authors:
 tags:
   - "Lightning"
   - "PTLC"
-  - "Bitcoin"
 
 mathjax: true
 images:
