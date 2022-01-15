@@ -316,7 +316,7 @@ When Bob makes a Lightning payment to one of the sellers, he will obtain the pre
 
 Now Bob can read the content of the squeak!
 
-The [GetDecryptedContent](https://github.com/squeaknode/squeak/blob/fde192b8b59b59090c6d2eb39f87d6b41b15c05e/squeak/core/__init__.py#L242-L261) method looks like this:
+The [GetDecryptedContent](https://github.com/squeaknode/squeak/blob/fde192b8b59b59090c6d2eb39f87d6b41b15c05e/squeak/core/__init__.py#L242-L261) method of the Squeak class looks like this:
 
 ```python
     def GetDecryptedContent(
