@@ -12,6 +12,7 @@ tags:
   - "PTLC"
   - "Bitcoin"
 
+mathjax: true
 images:
   - "/post-data/trustless-lightning-payments/ptlc-example-2.png"
 
@@ -99,11 +100,10 @@ string, they will obtain the payment point (`p = s*G`). The buyer will only
 obtain the "preimage" `s` after the payment is settled.
 
 So now that we know that PTLC invoices use elliptic curve points, we can
-take advantage of the distributive property of points on elliptic curves:
+take advantage of the distributive property of scalar multiplication
+on elliptic curve points:
 
-```
-(s1 + s2)*G = s1*G + s2*G
-```
+$$ (s1 + s2)\*G = s1\*G + s2\*G $$
 
 where `s1` and `s2` are scalars, and `G` is an elliptic curve.
 
