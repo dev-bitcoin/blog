@@ -141,25 +141,18 @@ for sharing sellable, encrypted, signed posts. The result is a trustless,
 decentralized alternative to Twitter with Lightning monetization.
 
 With the Squeak Protocol, any user can download an encrypted post (called a "squeak"),
-and verify several properties of the squeak:
-
-1) The squeak has a unique hash that is the same across all nodes
-2) The squeak was created and signed by a certain person, and the original content has not been altered.
-3) The squeak was created after a certain time (based on the block hash).
-4) The squeak was created in reply to another squeak (or not).
-5) The squeak was encrypted using a scalar that corresponds to a certain
-elliptic curve point. Any lightning invoice that matches the payment point
-is guaranteed to decrypt the content.
+and interact with the squeak as the basic unit of a status feed timeline.
 
 When a user downloads a squeak from another peer onto their node, the squeak
 contains enough information to display in a timeline UI.
 
-However, a newly downloaded squeak will display as locked.
+A newly downloaded squeak will display as locked:
 
 {{< center-figure src="/post-data/trustless-lightning-payments/locked-squeak.png" height=600 width=600 >}}
 
 If the consumer then clicks the "buy" button, they will be presented with an invoice
-that they received from the seller:
+from the seller (the seller can be any other node in the network has has a copy of the
+secret key):
 
 {{< center-figure src="/post-data/trustless-lightning-payments/received-offer.png" height=600 width=600 >}}
 
@@ -292,6 +285,9 @@ For example, if Alice authored a squeak, and Bob obtained a copy of the squeak:
 * Bob will know that none of the fields were modified after being signed by the Alice (that would change the hash, and the signature would become invalid if that happened).
 * Bob will know that the squeak was created after a certain time (given by the embedded block hash and block height).
 * Bob will know if the squeak is a reply to another squeak (given by the embedded reply hash field).
+* Bob will know that the squeak was encrypted using a scalar that corresponds to a certain
+elliptic curve point. Any lightning invoice that matches the payment point
+is guaranteed to decrypt the content will unlock the content upon settlement.
 
 However, if Bob does not have the corresponding secret key:
 
