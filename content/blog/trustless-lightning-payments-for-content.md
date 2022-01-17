@@ -281,25 +281,17 @@ def MakeSqueak(
     return squeak, secret_key
 ```
 
-### Properties of a squeak
+### How a user interacts with a squeak
 
 After a squeak is created, it can be shared and validated on any node.
 
-A validated squeak has the following properies:
-
-* The squeak hash is a unique identifier for the squeak, because it is derived from the immutable fields of the squeak header.
-* The pubkey embedded in the squeak belongs to the author of the squeak (proved by the signature).
-* None of the fields in the header were modified after being signed by the author (that would change the hash, and the signature would become invalid if that happened).
-* The encrypted content field was not modified after being signed by the author (that would also result in the signature becoming invalid).
-* The Bitcoin block hash and block height (if valid) prove that the squeak was created after that block was mined.
-
-### How a user interacts with a squeak
-
 For example, if Alice authored a squeak, and Bob obtained a copy of the squeak:
 
-* Bob will know that the squeak was authored by Alice.
-* Bob will know that the squeak was created after a certain time (given by the block hash).
-* Bob will know if the squeak is a reply to another squeak.
+* Bob will know that the squeak hash is the same on his node as on any other node (because the hash function is deterministic).
+* Bob will know that the squeak was authored by Alice (because the Alice's pubkey is embedded in the squeak and the squeak hash is signed with Alice's signature).
+* Bob will know that none of the fields were modified after being signed by the Alice (that would change the hash, and the signature would become invalid if that happened).
+* Bob will know that the squeak was created after a certain time (given by the embedded block hash and block height).
+* Bob will know if the squeak is a reply to another squeak (given by the embedded reply hash field).
 
 However, because Bob does not have the decryption key:
 
