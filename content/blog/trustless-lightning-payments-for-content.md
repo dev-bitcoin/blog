@@ -286,8 +286,8 @@ For example, if Alice authored a squeak, and Bob obtained a copy of the squeak:
 * Bob will know that the squeak was created after a certain time (given by the embedded block hash and block height).
 * Bob will know if the squeak is a reply to another squeak (given by the embedded reply hash field).
 * Bob will know that the squeak was encrypted using a scalar that corresponds to a certain
-elliptic curve point. Any lightning invoice that matches the payment point
-is guaranteed to decrypt the content will unlock the content upon settlement.
+elliptic curve point. This means that any lightning invoice that matches the payment point
+is guaranteed to decrypt the content upon settlement.
 
 However, if Bob does not have the corresponding secret key:
 
