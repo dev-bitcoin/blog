@@ -293,9 +293,9 @@ For example, if Alice authored a squeak, and Bob obtained a copy of the squeak:
 * Bob will know that the squeak was created after a certain time (given by the embedded block hash and block height).
 * Bob will know if the squeak is a reply to another squeak (given by the embedded reply hash field).
 
-However, because Bob does not have the decryption key:
+However, if Bob does not have the corresponding secret key:
 
-* Bob will not be able to see the content of the squeak.
+* Bob will not be able to see the decrypted content of the squeak.
 
 ### How a user unlocks the content of a squeak
 
