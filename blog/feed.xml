@@ -666,7 +666,7 @@ be filtered and processed by tracing scripts. As a demo, I have built a P2P Moni
 that shows the communication between two peers in real-time. Users can find this
 script alongside other &lt;a href="https://github.com/bitcoin/bitcoin/tree/master/contrib/tracing">USDT examples&lt;/a> in the &lt;code>contrib/tracing/&lt;/code> directory of the
 Bitcoin Core repository.&lt;/p>
-&lt;blockquote class="twitter-tweet" data-dnt="true">&lt;p lang="en" dir="ltr">Realtime Bitcoin Core P2P monitoring with User-Space, Statically Defined Tracing (USDT) and eBPF.&lt;br>&lt;br>This is one of the examples from &lt;a href="https://t.co/1QGb7jgsnZ">https://t.co/1QGb7jgsnZ&lt;/a> (with added IP masking). &lt;a href="https://t.co/E5mREYknEm">pic.twitter.com/E5mREYknEm&lt;/a>&lt;/p>&amp;mdash; b10c (@0xB10C) &lt;a href="https://twitter.com/0xB10C/status/1396889721859715077?ref_src=twsrc%5Etfw">May 24, 2021&lt;/a>&lt;/blockquote>
+&lt;blockquote class="twitter-tweet" data-dnt="true">&lt;p lang="en" dir="ltr">Realtime Bitcoin Core P2P monitoring with User-Space, Statically Defined Tracing (USDT) and eBPF.&lt;br>&lt;br>This is one of the examples from &lt;a href="https://t.co/1QGb7jgsnZ">https://t.co/1QGb7jgsnZ&lt;/a> (with added IP masking). &lt;a href="https://t.co/E5mREYknEm">pic.twitter.com/E5mREYknEm&lt;/a>&lt;/p>&amp;mdash; 0xB10C (@0xB10C) &lt;a href="https://twitter.com/0xB10C/status/1396889721859715077?ref_src=twsrc%5Etfw">May 24, 2021&lt;/a>&lt;/blockquote>
 &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8">&lt;/script>
 &lt;h3 id="use-cases-for-userspace-statically-defined-tracing">Use-cases for Userspace, Statically Defined Tracing&lt;/h3>
 &lt;p>I list some use-cases for Userspace, Statically Defined Tracing
@@ -696,7 +696,7 @@ with other data.&lt;/p>
 &lt;p>Additionally, these addrman tracepoints can be helpful during debugging and
 code review. To showcase this, I build a tool that visualizes the addresses
 in the addrman data structure based on the data submitted to the tracepoints.&lt;/p>
-&lt;blockquote class="twitter-tweet" data-dnt="true">&lt;p lang="en" dir="ltr">Quiz: Which Bitcoin Core data-structure does this visualization show? &lt;a href="https://t.co/U6cnHBFWWT">pic.twitter.com/U6cnHBFWWT&lt;/a>&lt;/p>&amp;mdash; b10c (@0xB10C) &lt;a href="https://twitter.com/0xB10C/status/1407019872681332742?ref_src=twsrc%5Etfw">June 21, 2021&lt;/a>&lt;/blockquote>
+&lt;blockquote class="twitter-tweet" data-dnt="true">&lt;p lang="en" dir="ltr">Quiz: Which Bitcoin Core data-structure does this visualization show? &lt;a href="https://t.co/U6cnHBFWWT">pic.twitter.com/U6cnHBFWWT&lt;/a>&lt;/p>&amp;mdash; 0xB10C (@0xB10C) &lt;a href="https://twitter.com/0xB10C/status/1407019872681332742?ref_src=twsrc%5Etfw">June 21, 2021&lt;/a>&lt;/blockquote>
 &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8">&lt;/script>
 &lt;!-- raw HTML omitted -->
 &lt;p>A Prometheus metric exporter can also build on top of the tracepoints
