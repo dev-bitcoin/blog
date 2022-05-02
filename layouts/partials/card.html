@@ -10,6 +10,11 @@
       <div class="card-body">
         <small class="text-muted">
           published {{ .PublishDate.Format "January 2, 2006" }}
+          by
+          {{ range $index, $author := .Params.authors }}
+            {{ if (gt $index 0) }} and {{ end }}
+            {{ .name }}
+          {{ end }}
         </small>
         <h4 class="card-title">{{.Title}}
         </h4>
