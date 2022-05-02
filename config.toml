@@ -2,6 +2,9 @@ baseURL = "https://bitcoin-dev.blog"
 languageCode = "en-us"
 title = "bitcoin-dev blog"
 
+# Allows offline building.
+ignoreErrors = ["error-remote-getjson"]
+
 [params]
   images = [ "/img/og-image.png" ]
   description = "Bitcoin developers blogging about their open-source projects. A technical open-content blog."
@@ -36,4 +39,5 @@ title = "bitcoin-dev blog"
   [privacy.youtube]
     # YouTube won’t store information about visitors on your website unless the user plays the embedded video.
     privacyEnhanced = true
+
 
