@@ -8,11 +8,9 @@
     {{ end }}
     <div class="col col-md-8">
       <div class="card-body">
-        {{ if isset . "PublishDate" }}
-          <small class="text-muted">
-            {{ .PublishDate.Format "January 2, 2006" }}
-          </small>
-        {{ end }}
+        <small class="text-muted">
+          published {{ .PublishDate.Format "January 2, 2006" }}
+        </small>
         <h4 class="card-title">{{.Title}}
         </h4>
         <p class="card-text">
