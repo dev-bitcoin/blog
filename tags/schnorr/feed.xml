@@ -39,10 +39,10 @@ public key by multiplying it with $G$, which is the &lt;em>generator
 point&lt;/em>. At this stage, you have the following:&lt;/p>
 &lt;p>$$
 \begin{align}
-p &amp;amp; : \text{private key} \\&lt;br>
-P = pG &amp;amp; : \text{public key} \\&lt;br>
-m &amp;amp; : \text{message} \\&lt;br>
-r &amp;amp; : \text{random nonce} \\&lt;br>
+p &amp;amp; : \text{private key} \\
+P = pG &amp;amp; : \text{public key} \\
+m &amp;amp; : \text{message} \\
+r &amp;amp; : \text{random nonce} \\
 R = rG &amp;amp; : \text{nonce commitment}
 \end{align}
 $$&lt;/p>
@@ -80,7 +80,7 @@ known constant. From this information, he can calculate the challenge
 hash and verify that the &lt;em>verification equation&lt;/em> balances:&lt;/p>
 &lt;p>$$
 \begin{align}
-e &amp;amp; = H(R || P || m) \\&lt;br>
+e &amp;amp; = H(R || P || m) \\
 sG &amp;amp; = R + eP \tag{2} \label{vereqn}
 \end{align}
 $$&lt;/p>
@@ -91,7 +91,7 @@ both sides are multiplied by $G$. Starting with the response equation,
 we get&lt;/p>
 &lt;p>$$
 \begin{align}
-&amp;amp;s = r + ep \iff sG = (r+ep)G \\&lt;br>
+&amp;amp;s = r + ep \iff sG = (r+ep)G \\
 &amp;amp;\iff sG = rG + epG \iff sG = R + eP
 \end{align}
 $$&lt;/p>
@@ -109,14 +109,14 @@ wonder why it&amp;rsquo;s needed at all? Let&amp;rsquo;s start with the latter. 
 &lt;p>You would create the signature as follows:&lt;/p>
 &lt;p>$$
 \begin{array}{}
-e = H(P || m) \\&lt;br>
+e = H(P || m) \\
 s = ep
 \end{array}
 $$&lt;/p>
 &lt;p>The signature would consist only of $s$. Fred would then verify your signature as:&lt;/p>
 &lt;p>$$
 \begin{array}{}
-e = H(P || m) \\&lt;br>
+e = H(P || m) \\
 sG = eP
 \end{array}
 $$&lt;/p>
@@ -133,7 +133,7 @@ the nonce commitment, instead of the nonce itself?&lt;/p>
 available to Fred, then he could figure out $p$ by:&lt;/p>
 &lt;p>$$
 \begin{array}{}
-e = H(R || P || m) \\&lt;br>
+e = H(R || P || m) \\
 s = r + ep \iff p = \frac{s-r}{e}
 \end{array}
 $$&lt;/p>
@@ -148,32 +148,32 @@ if you use the nonce twice for the same private key. Suppose that you
 make two signatures with the same nonce and private key as follows:&lt;/p>
 &lt;p>$$
 \begin{array}{lr}
-e = H(R || P || m) &amp;amp; e' = H(R || P || m')\\&lt;br>
-s = r + ep &amp;amp; s' = r + e&amp;rsquo;p
+e = H(R || P || m) &amp;amp; e&amp;rsquo; = H(R || P || m&amp;rsquo;)\\
+s = r + ep &amp;amp; s&amp;rsquo; = r + e&amp;rsquo;p
 \end{array}
 $$&lt;/p>
-&lt;p>Then you give the signatures $(R,s)$ and $(R,s')$ to the verifier. The
+&lt;p>Then you give the signatures $(R,s)$ and $(R,s&amp;rsquo;)$ to the verifier. The
 verifier can then use simple arithmetic to calculate your private
 key. He can set up an equation system with two equations and two
 unknown as follows:&lt;/p>
 &lt;p>$$
 \begin{align}
-s &amp;amp;= r + ep\\&lt;br>
-s' &amp;amp;= r + e&amp;rsquo;p
+s &amp;amp;= r + ep\\
+s&amp;rsquo; &amp;amp;= r + e&amp;rsquo;p
 \end{align}
 $$&lt;/p>
-&lt;p>This is solvable for $p$ by subtracting $s'$ from $s$:&lt;/p>
+&lt;p>This is solvable for $p$ by subtracting $s&amp;rsquo;$ from $s$:&lt;/p>
 &lt;p>$$
 \begin{align}
-&amp;amp;s-s'=r+ep-r-e&amp;rsquo;p \\&lt;br>
-&amp;amp;=(e-e')p \implies p=\frac{s-s'}{e-e'}
+&amp;amp;s-s&amp;rsquo;=r+ep-r-e&amp;rsquo;p \\
+&amp;amp;=(e-e&amp;rsquo;)p \implies p=\frac{s-s&amp;rsquo;}{e-e&amp;rsquo;}
 \end{align}
 $$&lt;/p>
 &lt;p>As you can see, the verifier will be able to extract the private
 key. Lesson learned: Don&amp;rsquo;t reuse nonces.&lt;/p>
-&lt;p>If the nonce is reused, but for different private keys, $p$ and $p'$,
+&lt;p>If the nonce is reused, but for different private keys, $p$ and $p&amp;rsquo;$,
 the above equation system wouldn&amp;rsquo;t be solvable because you&amp;rsquo;d have
-three unknowns, $p$, $p'$, and $r$, but only &lt;em>two&lt;/em> equations.&lt;/p>
+three unknowns, $p$, $p&amp;rsquo;$, and $r$, but only &lt;em>two&lt;/em> equations.&lt;/p>
 &lt;h2 id="whats-with-the-challenge-a-idchallenge">What&amp;rsquo;s with the challenge? &lt;!-- raw HTML omitted -->&lt;/h2>
 &lt;p>The challenge hash, $e$, is the hash of the challenge $R||P||m$. Why
 do we use this particular challenge? Let&amp;rsquo;s look at the three components separately.&lt;/p>
@@ -192,8 +192,8 @@ then a signature can be trivially forged by anyone with access to the
 public key $P$. They can make up an arbitrary $s$ and do:&lt;/p>
 &lt;p>$$
 \begin{align}
-&amp;amp;e = H(P||m)\\&lt;br>
-&amp;amp;s = \text{any number} \\&lt;br>
+&amp;amp;e = H(P||m)\\
+&amp;amp;s = \text{any number} \\
 &amp;amp;sG=R+eP \implies R=sG-eP
 \end{align}
 $$&lt;/p>
@@ -207,14 +207,14 @@ $e$. It&amp;rsquo;s hard to find an $R$ such that $R=sG-H(R||P||m)P$.&lt;/p>
 &lt;p>Let&amp;rsquo;s finally see what $P$ is doing in the challenge. Suppose that we
 didn&amp;rsquo;t have $P$ in the challenge, $e=H(R||m)$, and that the signature
 $(R,s)$ is valid for public key $P$ and message $m$. Then the
-signature $(R,s')=(R,s+ex)$, where $x$ is an arbitrary number, would
-be valid for a public key $P'=P+xG$ and message $m$. Let&amp;rsquo;s look at
+signature $(R,s&amp;rsquo;)=(R,s+ex)$, where $x$ is an arbitrary number, would
+be valid for a public key $P&amp;rsquo;=P+xG$ and message $m$. Let&amp;rsquo;s look at
 why:&lt;/p>
 &lt;p>$$
 \begin{align}
-&amp;amp;e = H(R || m) \\&lt;br>
-&amp;amp;s&amp;rsquo;G=R+eP' \iff (s+ex)G=R+e(P+xG) \iff \\&lt;br>
-&amp;amp;sG+exG=R+eP+exG \iff sG=R+eP+exG-exG \iff \\&lt;br>
+&amp;amp;e = H(R || m) \\
+&amp;amp;s&amp;rsquo;G=R+eP&amp;rsquo; \iff (s+ex)G=R+e(P+xG) \iff \\
+&amp;amp;sG+exG=R+eP+exG \iff sG=R+eP+exG-exG \iff \\
 &amp;amp;sG=R+eP
 \end{align}
 $$&lt;/p>

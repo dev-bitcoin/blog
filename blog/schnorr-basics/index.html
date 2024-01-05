@@ -1,322 +1,174 @@
-<!doctype html><html lang=en><head>
-<meta charset=utf-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<meta http-equiv=x-ua-compatible content="ie=edge">
-<meta name=description content>
-<title>Schnorr basics</title>
-<meta property="og:title" content="Schnorr basics">
-<meta property="og:description" content="If you&rsquo;re having a difficult time wrapping your head around Schnorr
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta http-equiv=x-ua-compatible content="ie=edge"><meta name=description content><title>Schnorr basics</title><meta property="og:title" content="Schnorr basics"><meta property="og:description" content="If you&rsquo;re having a difficult time wrapping your head around Schnorr
 signatures, you&rsquo;re not alone. In this post, I attempt to explain
 Schnorr signatures at a level that I myself appreciate, and
-hopefully, you&rsquo;ll find it valuable too.">
-<meta property="og:type" content="article">
-<meta property="og:url" content="https://bitcoin-dev.blog/blog/schnorr-basics/"><meta property="og:image" content="https://bitcoin-dev.blog/post-data/schnorr-basics/sig-overview.png"><meta property="article:section" content="blog">
-<meta property="article:published_time" content="2022-01-03T00:00:00+00:00">
-<meta property="article:modified_time" content="2022-01-03T00:00:00+00:00">
-<meta name=twitter:card content="summary_large_image">
-<meta name=twitter:image content="https://bitcoin-dev.blog/post-data/schnorr-basics/sig-overview.png">
-<meta name=twitter:title content="Schnorr basics">
-<meta name=twitter:description content="If you&rsquo;re having a difficult time wrapping your head around Schnorr
+hopefully, you&rsquo;ll find it valuable too."><meta property="og:type" content="article"><meta property="og:url" content="https://bitcoin-dev.blog/blog/schnorr-basics/"><meta property="og:image" content="https://bitcoin-dev.blog/post-data/schnorr-basics/sig-overview.png"><meta property="article:section" content="blog"><meta property="article:published_time" content="2022-01-03T00:00:00+00:00"><meta property="article:modified_time" content="2022-01-03T00:00:00+00:00"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://bitcoin-dev.blog/post-data/schnorr-basics/sig-overview.png"><meta name=twitter:title content="Schnorr basics"><meta name=twitter:description content="If you&rsquo;re having a difficult time wrapping your head around Schnorr
 signatures, you&rsquo;re not alone. In this post, I attempt to explain
 Schnorr signatures at a level that I myself appreciate, and
-hopefully, you&rsquo;ll find it valuable too.">
-<meta name=twitter:site content="@bitcoindevblog">
-<link rel=stylesheet href=/css/bootstrap.min.css integrity=sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC crossorigin=anonymous>
-<link rel=stylesheet href=/css/syntax.css>
-<link rel=stylesheet href=/css/index.css>
-<link rel="shortcut icon" href=/favicon.png type=image/png>
-<link rel=icon href=/favicon.png type=image/png>
-<script async defer data-website-id=dfc2acc6-9237-4a34-bc2b-37967cb79a4c src=https://umami.b10c.me/b10c.js></script>
-<script>MathJax={tex:{inlineMath:[['$','$'],['\\(','\\)']],displayMath:[['$$','$$'],['\\[','\\]']],processEscapes:!0,processEnvironments:!0},options:{skipHtmlTags:['script','noscript','style','textarea','pre']}},window.addEventListener('load',a=>{document.querySelectorAll("mjx-container").forEach(function(a){a.parentElement.classList+='has-jax'})})</script>
-<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-<script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script>
-</head>
-<body><nav class="navbar container rounded-bottom shadow-sm mb-4">
-<a class=navbar-brand href=/>
-<img src=/img/logo-large.png height=50 class="d-inline-block align-baseline image-to-invert mx-2" alt="bitcoin-dev blog logo">
-<div class=d-inline-block>
-<h1 class="d-block mb-0">bitcoin-dev blog</h1>
-<h6 class="d-block mb-0" style="font-size:calc(.7rem + .7vw)">by and for Bitcoin developers</h6>
-</div>
-</a>
-<div class=ml-auto>
-<div class="form-check form-switch">
-<input class=form-check-input type=checkbox id=light-dark-mode-switch>
-<noscript>requires JS</noscript>
-</div>
-<script>var html,darkmodeSwitch;const MODE_KEY="mode";html=document.querySelector("html"),darkmodeSwitch=document.getElementById("light-dark-mode-switch");function set_dark_mode(){darkmodeSwitch.checked=!0,html.classList.add("dark"),html.classList.remove("light"),localStorage.setItem(MODE_KEY,!0)}function set_light_mode(){darkmodeSwitch.checked=!1,html.classList.add("light"),html.classList.remove("dark"),localStorage.setItem(MODE_KEY,!1)}let isModeStored=localStorage.getItem(MODE_KEY)!==null,perfersDarkmode=window.matchMedia('(prefers-color-scheme: dark)').matches;if(isModeStored){let a=localStorage.getItem(MODE_KEY)=="true";console.log("Dark-mode set to",a,"in localStorage."),a?set_dark_mode():set_light_mode()}else perfersDarkmode?(console.log("User prefers dark-mode."),set_dark_mode()):set_light_mode();darkmodeSwitch.addEventListener('change',a=>{a.currentTarget.checked?set_dark_mode():set_light_mode()})</script>
-</div>
-</nav>
-<div id=content class="container px-md-5">
-<article class="card py-2 border-0 rounded shadow-sm mx-md-5 px-md-2">
-<div class=card-body>
-<div class="card-text px-lg-5 mx-lg-5 px-md-3 mx-md-3">
-<header class="mt-lg-4 mb-3">
-<span class=small>
-</span>
-<h2>
-Schnorr basics
-</h2>
-<h5>Explaining Schnorr signatures with simplified maths</h5>
-<span>
-published January 3, 2022
-</span>
-<span>
-by
+hopefully, you&rsquo;ll find it valuable too."><meta name=twitter:site content="@bitcoindevblog"><link rel=stylesheet href=/css/bootstrap.min.css integrity=sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC crossorigin=anonymous><link rel=stylesheet href=/css/syntax.css><link rel=stylesheet href=/css/index.css><link rel="shortcut icon" href=/favicon.png type=image/png><link rel=icon href=/favicon.png type=image/png><script async defer data-website-id=dfc2acc6-9237-4a34-bc2b-37967cb79a4c src=https://umami.b10c.me/b10c.js></script>
+<script>MathJax={tex:{inlineMath:[["$","$"],["\\(","\\)"]],displayMath:[["$$","$$"],["\\[","\\]"]],processEscapes:!0,processEnvironments:!0},options:{skipHtmlTags:["script","noscript","style","textarea","pre"]}},window.addEventListener("load",e=>{document.querySelectorAll("mjx-container").forEach(function(e){e.parentElement.classList+="has-jax"})})</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id=MathJax-script async src=https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js></script></head><body><nav class="navbar container rounded-bottom shadow-sm mb-4"><a class=navbar-brand href=/><img src=/img/logo-large.png height=50 class="d-inline-block align-baseline image-to-invert mx-2" alt="bitcoin-dev blog logo"><div class=d-inline-block><h1 class="d-block mb-0">bitcoin-dev blog</h1><h6 class="d-block mb-0" style="font-size:calc(.7rem + .7vw)">by and for Bitcoin developers</h6></div></a><div class=ml-auto><div class="form-check form-switch"><input class=form-check-input type=checkbox id=light-dark-mode-switch><noscript>requires JS</noscript></div><script>const MODE_KEY="mode";var html=document.querySelector("html"),darkmodeSwitch=document.getElementById("light-dark-mode-switch");function set_dark_mode(){darkmodeSwitch.checked=!0,html.classList.add("dark"),html.classList.remove("light"),localStorage.setItem(MODE_KEY,!0)}function set_light_mode(){darkmodeSwitch.checked=!1,html.classList.add("light"),html.classList.remove("dark"),localStorage.setItem(MODE_KEY,!1)}let isModeStored=localStorage.getItem(MODE_KEY)!==null,perfersDarkmode=window.matchMedia("(prefers-color-scheme: dark)").matches;if(isModeStored){let e=localStorage.getItem(MODE_KEY)=="true";console.log("Dark-mode set to",e,"in localStorage."),e?set_dark_mode():set_light_mode()}else perfersDarkmode?(console.log("User prefers dark-mode."),set_dark_mode()):set_light_mode();darkmodeSwitch.addEventListener("change",e=>{e.currentTarget.checked?set_dark_mode():set_light_mode()})</script></div></nav><div id=content class="container px-md-5"><article class="card py-2 border-0 rounded shadow-sm mx-md-5 px-md-2"><div class=card-body><div class="card-text px-lg-5 mx-lg-5 px-md-3 mx-md-3"><header class="mt-lg-4 mb-3"><span class=small></span><h2>Schnorr basics</h2><h5>Explaining Schnorr signatures with simplified maths</h5><span>published January 3, 2022</span>
+<span>by
 Kalle Rosenbaum
-<a href=https://github.com/kallerosenbaum class="mx-1 image-to-invert">
-<img src=/img/footer/github.svg alt="link to @kallerosenbaum on GitHub" height=18 class="d-inline-block align-text-top">
-</a>
-<a href=https://twitter.com/kallerosenbaum class="mr-1 image-to-invert">
-<img src=/img/footer/twitter.svg alt="link to @kallerosenbaum on Twitter" height=18 class="d-inline-block align-text-top">
-</a>
-</span>
-</br>
-<span>
-tagged with
+<a href=https://github.com/kallerosenbaum class="mx-1 image-to-invert"><img src=/img/footer/github.svg alt="link to @kallerosenbaum on GitHub" height=18 class="d-inline-block align-text-top"></a>
+<a href=https://twitter.com/kallerosenbaum class="mr-1 image-to-invert"><img src=/img/footer/twitter.svg alt="link to @kallerosenbaum on Twitter" height=18 class="d-inline-block align-text-top"></a></span></br><span>tagged with
 <a href=/tags/schnorr>Schnorr</a>,
 <a href=/tags/signature>signature</a>,
-<a href=/tags/bip340>BIP340</a>
-</span>
-<br>
-<span>
-appeared first on <a href=https://popeller.io/schnorr-basics>popeller.io</a>
-</span>
-</header>
-<hr>
-<section class=content-text>
-<p>If you&rsquo;re having a difficult time wrapping your head around Schnorr
+<a href=/tags/bip340>BIP340</a></span><br><span>appeared first on <a href=https://popeller.io/schnorr-basics>popeller.io</a></span></header><hr><section class=content-text><p>If you&rsquo;re having a difficult time wrapping your head around Schnorr
 signatures, you&rsquo;re not alone. In this post, I attempt to explain
 Schnorr signatures at a level that I myself appreciate, and
-hopefully, you&rsquo;ll find it valuable too.</p>
-<h2 id=whats-schnorr>What&rsquo;s Schnorr?</h2>
-<p>Schnorr is a new signature scheme in Bitcoin that got activated in the
+hopefully, you&rsquo;ll find it valuable too.</p><h2 id=whats-schnorr>What&rsquo;s Schnorr?</h2><p>Schnorr is a new signature scheme in Bitcoin that got activated in the
 taproot upgrade. Schnorr has some nice properties listed in
-<a href=https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki#motivation>BIP340</a>, but I won&rsquo;t reiterate those here.</p>
-<h2 id=signing-and-verifying>Signing and verifying</h2>
-<p>A signature scheme consists of two actions, signing and verification
-as the following diagram shows.</p>
-<figure><img src=/post-data/schnorr-basics/sig-overview.svg class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" alt="Left side: signing using a message and a private key. Right side: verification that the message (the cat) was signed with the correct private key." width=80% height=80%><figcaption>
-<p>
-<center>Left side: signing using a message and a private key. Right side: verification that the message (the cat) was signed with the correct private key.
-</center>
-</p>
-</figcaption>
-</figure>
-<p>The signer has a private key and a message to sign (for example, a
+<a href=https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki#motivation>BIP340</a>, but I won&rsquo;t reiterate those here.</p><h2 id=signing-and-verifying>Signing and verifying</h2><p>A signature scheme consists of two actions, signing and verification
+as the following diagram shows.</p><figure><img src=/post-data/schnorr-basics/sig-overview.svg class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" alt="Left side: signing using a message and a private key. Right side: verification that the message (the cat) was signed with the correct private key." width=80% height=80%><figcaption><p><center>Left side: signing using a message and a private key. Right side: verification that the message (the cat) was signed with the correct private key.</center></p></figcaption></figure><p>The signer has a private key and a message to sign (for example, a
 Bitcoin transaction or a cat picture) and produces a signature. The
 verifier has the public key corresponding to the private key that the
 signer used, the message, and the signature. The verification process
 makes sure that the signature was created with the correct private
-key without knowing the private key.</p>
-<p>If you want a more in-depth explanation, please visit <a href=https://rosenbaum.se/book/grokking-bitcoin-2.html#_digital_signatures>the second half of chapter 2 of Grokking Bitcoin</a>.</p>
-<h3 id=signer>Signer</h3>
-<p>We&rsquo;re now going to see how a Schnorr signature is created. It
+key without knowing the private key.</p><p>If you want a more in-depth explanation, please visit <a href=https://rosenbaum.se/book/grokking-bitcoin-2.html#_digital_signatures>the second half of chapter 2 of Grokking Bitcoin</a>.</p><h3 id=signer>Signer</h3><p>We&rsquo;re now going to see how a Schnorr signature is created. It
 represents the left side of the diagram above. I assume that you&rsquo;re
 familiar with how a key pair is created using a random number
 generator and an elliptic curve. If not, I suggest you read
-<a href=https://rosenbaum.se/book/grokking-bitcoin-4.html#public-key-math>section 4.8 of Grokking Bitcoin</a>.</p>
-<p>Suppose that you want to make a signature for the cat picture. The
-picture is the message, $m$, to sign. Your private key is $p$ which belongs to your public key $P$.</p>
-<p>The first thing you&rsquo;ll do is to draw a random number, $r$, that we&rsquo;ll
+<a href=https://rosenbaum.se/book/grokking-bitcoin-4.html#public-key-math>section 4.8 of Grokking Bitcoin</a>.</p><p>Suppose that you want to make a signature for the cat picture. The
+picture is the message, $m$, to sign. Your private key is $p$ which belongs to your public key $P$.</p><p>The first thing you&rsquo;ll do is to draw a random number, $r$, that we&rsquo;ll
 call the nonce (for &ldquo;Number Once&rdquo;). Then you&rsquo;ll treat $r$ as if it was
 a private key, which means that you can generate the corresponding
 public key by multiplying it with $G$, which is the <em>generator
-point</em>. At this stage, you have the following:</p>
-<p>$$
+point</em>. At this stage, you have the following:</p><p>$$
 \begin{align}
-p & : \text{private key} \\<br>
-P = pG & : \text{public key} \\<br>
-m & : \text{message} \\<br>
-r & : \text{random nonce} \\<br>
+p & : \text{private key} \\
+P = pG & : \text{public key} \\
+m & : \text{message} \\
+r & : \text{random nonce} \\
 R = rG & : \text{nonce commitment}
 \end{align}
-$$</p>
-<p>$R$ is your <em>nonce commitment</em> which will become the first part of
+$$</p><p>$R$ is your <em>nonce commitment</em> which will become the first part of
 the final signature, and $r$ must remain secret
 (<a href=#why-r-secret>explained later</a>) and never be reused (also
 <a href=#nonce-reuse>explained later</a>). You&rsquo;ve prepared everything you need
 to make the signature. You&rsquo;ll do it in two steps. Step 1 is to
-calculate a so-called <em>challenge hash</em>, $e$:</p>
-<p>$$
+calculate a so-called <em>challenge hash</em>, $e$:</p><p>$$
 e = H(R || P || m)
-$$</p>
-<p>The challenge hash is the hash of the challenge, which is the
+$$</p><p>The challenge hash is the hash of the challenge, which is the
 concatenation of $R$, $P$, and $m$. These components will all be
 available to the verifier. Using the challenge hash, you can now do step 2:
 Calculate the <em>challenge response</em>, or simply <em>response</em>, $s$, which
 is the second part of the signature (Thanks to Anthony Towns,
 Ruben Somsen, and nothingmuch on Twitter for
-<a href=https://twitter.com/kallerosenbaum/status/1472515231050080266>their help with the name <em>response</em></a>.):</p>
-<p>$$
+<a href=https://twitter.com/kallerosenbaum/status/1472515231050080266>their help with the name <em>response</em></a>.):</p><p>$$
 s = r + ep \tag{1} \label{respeqn}
-$$</p>
-<p>Finally, your signature is</p>
-<p>$$
+$$</p><p>Finally, your signature is</p><p>$$
 (R,s)
-$$</p>
-<p>You send the cat picture, $m$, and your signature $(R,s)$ to your
-friend, Fred.</p>
-<h3 id=verifier>Verifier</h3>
-<p>Fred wants to make sure the cat picture hasn&rsquo;t been compromised during
+$$</p><p>You send the cat picture, $m$, and your signature $(R,s)$ to your
+friend, Fred.</p><h3 id=verifier>Verifier</h3><p>Fred wants to make sure the cat picture hasn&rsquo;t been compromised during
 transfer and that it really originates from you, the only one with
 access to your private key $p$. He has access to $P$, $m$, $R$, and
 $s$. Of course, he also has access to $G$ because that&rsquo;s a widely
 known constant. From this information, he can calculate the challenge
-hash and verify that the <em>verification equation</em> balances:</p>
-<p>$$
+hash and verify that the <em>verification equation</em> balances:</p><p>$$
 \begin{align}
-e & = H(R || P || m) \\<br>
+e & = H(R || P || m) \\
 sG & = R + eP \tag{2} \label{vereqn}
 \end{align}
-$$</p>
-<p><strong>If this equation balances, Fred can be sure that the signature was
+$$</p><p><strong>If this equation balances, Fred can be sure that the signature was
 made with $p$</strong>. Note that the verification equation, equation
 $(\ref{vereqn})$, is the response equation, $(\ref{respeqn})$, where
 both sides are multiplied by $G$. Starting with the response equation,
-we get</p>
-<p>$$
+we get</p><p>$$
 \begin{align}
-&s = r + ep \iff sG = (r+ep)G \\<br>
+&amp;s = r + ep \iff sG = (r+ep)G \\
 &\iff sG = rG + epG \iff sG = R + eP
 \end{align}
-$$</p>
-<p>As you can see: If the response equation holds, the verification
+$$</p><p>As you can see: If the response equation holds, the verification
 equation holds. Likewise, if the verification equation holds, the
 response equation also holds. Thus, when Fred verifies the equation
 based on points on the elliptic curve, the verification equation, he
 also implicitly verifies that the response equation, based on scalars,
-holds.</p>
-<p>When Fred has verified the signature, he can enjoy the cat picture,
-fully confident that it&rsquo;s actually the same picture as you sent him.</p>
-<h2 id=why-is-r-secret-a-idwhy-r-secreta>Why is $r$ secret? </h2>
-<p>You might wonder why the nonce $r$ must be kept secret. You might even
-wonder why it&rsquo;s needed at all? Let&rsquo;s start with the latter. Let&rsquo;s remove $r$ from the process and see what happens.</p>
-<p>You would create the signature as follows:</p>
-<p>$$
+holds.</p><p>When Fred has verified the signature, he can enjoy the cat picture,
+fully confident that it&rsquo;s actually the same picture as you sent him.</p><h2 id=why-is-r-secret-a-idwhy-r-secreta>Why is $r$ secret?</h2><p>You might wonder why the nonce $r$ must be kept secret. You might even
+wonder why it&rsquo;s needed at all? Let&rsquo;s start with the latter. Let&rsquo;s remove $r$ from the process and see what happens.</p><p>You would create the signature as follows:</p><p>$$
 \begin{array}{}
-e = H(P || m) \\<br>
+e = H(P || m) \\
 s = ep
 \end{array}
-$$</p>
-<p>The signature would consist only of $s$. Fred would then verify your signature as:</p>
-<p>$$
+$$</p><p>The signature would consist only of $s$. Fred would then verify your signature as:</p><p>$$
 \begin{array}{}
-e = H(P || m) \\<br>
+e = H(P || m) \\
 sG = eP
 \end{array}
-$$</p>
-<p>That equation holds, but it would also allow Fred to extract the
+$$</p><p>That equation holds, but it would also allow Fred to extract the
 private key $p$ since he knows both $s$ and $e$. He&rsquo;ll take the
-response equation and solve it for p:</p>
-<p>$$
+response equation and solve it for p:</p><p>$$
 s = ep \iff p = \frac{s}{e}
-$$</p>
-<p>OK, we need the nonce to prevent Fred from figuring out your private
+$$</p><p>OK, we need the nonce to prevent Fred from figuring out your private
 key, but why must we keep the nonce secret? Why the hassle of using
-the nonce commitment, instead of the nonce itself?</p>
-<p>It&rsquo;s for the same reason. Suppose that that the nonce, $r$, was made
-available to Fred, then he could figure out $p$ by:</p>
-<p>$$
+the nonce commitment, instead of the nonce itself?</p><p>It&rsquo;s for the same reason. Suppose that that the nonce, $r$, was made
+available to Fred, then he could figure out $p$ by:</p><p>$$
 \begin{array}{}
-e = H(R || P || m) \\<br>
+e = H(R || P || m) \\
 s = r + ep \iff p = \frac{s-r}{e}
 \end{array}
-$$</p>
-<p>So Fred could calculate $p$ by subtracting $r$ from $s$ and dividing
-the result by $e$.</p>
-<p>By revealing just the nonce commitment, $R$, to Fred, we make sure
+$$</p><p>So Fred could calculate $p$ by subtracting $r$ from $s$ and dividing
+the result by $e$.</p><p>By revealing just the nonce commitment, $R$, to Fred, we make sure
 that Fred can&rsquo;t calculate $p$ while at the same time allowing him to
-verify that $p$ was used to generate the signature.</p>
-<h2 id=dont-reuse-nonces-a-idnonce-reuse>Don&rsquo;t reuse nonces </h2>
-<p>Even if you keep the nonce secret, you may still leak your private key
+verify that $p$ was used to generate the signature.</p><h2 id=dont-reuse-nonces-a-idnonce-reuse>Don&rsquo;t reuse nonces</h2><p>Even if you keep the nonce secret, you may still leak your private key
 if you use the nonce twice for the same private key. Suppose that you
-make two signatures with the same nonce and private key as follows:</p>
-<p>$$
+make two signatures with the same nonce and private key as follows:</p><p>$$
 \begin{array}{lr}
-e = H(R || P || m) & e' = H(R || P || m')\\<br>
-s = r + ep & s' = r + e&rsquo;p
+e = H(R || P || m) & e&rsquo; = H(R || P || m&rsquo;)\\
+s = r + ep & s&rsquo; = r + e&rsquo;p
 \end{array}
-$$</p>
-<p>Then you give the signatures $(R,s)$ and $(R,s')$ to the verifier. The
+$$</p><p>Then you give the signatures $(R,s)$ and $(R,s&rsquo;)$ to the verifier. The
 verifier can then use simple arithmetic to calculate your private
 key. He can set up an equation system with two equations and two
-unknown as follows:</p>
-<p>$$
+unknown as follows:</p><p>$$
 \begin{align}
-s &= r + ep\\<br>
-s' &= r + e&rsquo;p
+s &= r + ep\\
+s&rsquo; &= r + e&rsquo;p
 \end{align}
-$$</p>
-<p>This is solvable for $p$ by subtracting $s'$ from $s$:</p>
-<p>$$
+$$</p><p>This is solvable for $p$ by subtracting $s&rsquo;$ from $s$:</p><p>$$
 \begin{align}
-&s-s'=r+ep-r-e&rsquo;p \\<br>
-&=(e-e')p \implies p=\frac{s-s'}{e-e'}
+&amp;s-s&rsquo;=r+ep-r-e&rsquo;p \\
+&=(e-e&rsquo;)p \implies p=\frac{s-s&rsquo;}{e-e&rsquo;}
 \end{align}
-$$</p>
-<p>As you can see, the verifier will be able to extract the private
-key. Lesson learned: Don&rsquo;t reuse nonces.</p>
-<p>If the nonce is reused, but for different private keys, $p$ and $p'$,
+$$</p><p>As you can see, the verifier will be able to extract the private
+key. Lesson learned: Don&rsquo;t reuse nonces.</p><p>If the nonce is reused, but for different private keys, $p$ and $p&rsquo;$,
 the above equation system wouldn&rsquo;t be solvable because you&rsquo;d have
-three unknowns, $p$, $p'$, and $r$, but only <em>two</em> equations.</p>
-<h2 id=whats-with-the-challenge-a-idchallenge>What&rsquo;s with the challenge? </h2>
-<p>The challenge hash, $e$, is the hash of the challenge $R||P||m$. Why
-do we use this particular challenge? Let&rsquo;s look at the three components separately.</p>
-<h3 id=m>$m$</h3>
-<p>The message to sign is $m$, so it&rsquo;s really important that $m$ is
+three unknowns, $p$, $p&rsquo;$, and $r$, but only <em>two</em> equations.</p><h2 id=whats-with-the-challenge-a-idchallenge>What&rsquo;s with the challenge?</h2><p>The challenge hash, $e$, is the hash of the challenge $R||P||m$. Why
+do we use this particular challenge? Let&rsquo;s look at the three components separately.</p><h3 id=m>$m$</h3><p>The message to sign is $m$, so it&rsquo;s really important that $m$ is
 somehow committed to by the signature. If we&rsquo;d remove $m$ from the
-challenge, the &ldquo;signature&rdquo; would be valid for any message.</p>
-<h3 id=r>$R$</h3>
-<p>(Thanks to <a href=https://x0f.org/@waxwing/107491024866468566>waxwing</a> and
+challenge, the &ldquo;signature&rdquo; would be valid for any message.</p><h3 id=r>$R$</h3><p>(Thanks to <a href=https://x0f.org/@waxwing/107491024866468566>waxwing</a> and
 <a href=https://mastodon.social/@ajtowns/107491605500890702>A J Towns</a> for
-their help in sorting this out.)</p>
-<p>To make sure that no one but the owner of the private key can create a
+their help in sorting this out.)</p><p>To make sure that no one but the owner of the private key can create a
 signature, the challenge must contain the nonce commitment
 $R$. Suppose that the challenge didn&rsquo;t include the nonce commitment,
 then a signature can be trivially forged by anyone with access to the
-public key $P$. They can make up an arbitrary $s$ and do:</p>
-<p>$$
+public key $P$. They can make up an arbitrary $s$ and do:</p><p>$$
 \begin{align}
-&e = H(P||m)\\<br>
-&s = \text{any number} \\<br>
-&sG=R+eP \implies R=sG-eP
+&amp;e = H(P||m)\\
+&amp;s = \text{any number} \\
+&amp;sG=R+eP \implies R=sG-eP
 \end{align}
-$$</p>
-<p>The last equation is the &ldquo;verification equation&rdquo;, but solved for
+$$</p><p>The last equation is the &ldquo;verification equation&rdquo;, but solved for
 $R$. The right side of that equation contains only known variables,
-$s$, $e$, and $P$. Thus the signature $(R,s)$ is valid.</p>
-<p>With $R$ in the challenge, it&rsquo;s impossible to solve the
+$s$, $e$, and $P$. Thus the signature $(R,s)$ is valid.</p><p>With $R$ in the challenge, it&rsquo;s impossible to solve the
 verification equation for $R$ because $R$ is part of the challenge
-$e$. It&rsquo;s hard to find an $R$ such that $R=sG-H(R||P||m)P$.</p>
-<h3 id=p>$P$</h3>
-<p>Let&rsquo;s finally see what $P$ is doing in the challenge. Suppose that we
+$e$. It&rsquo;s hard to find an $R$ such that $R=sG-H(R||P||m)P$.</p><h3 id=p>$P$</h3><p>Let&rsquo;s finally see what $P$ is doing in the challenge. Suppose that we
 didn&rsquo;t have $P$ in the challenge, $e=H(R||m)$, and that the signature
 $(R,s)$ is valid for public key $P$ and message $m$. Then the
-signature $(R,s')=(R,s+ex)$, where $x$ is an arbitrary number, would
-be valid for a public key $P'=P+xG$ and message $m$. Let&rsquo;s look at
-why:</p>
-<p>$$
+signature $(R,s&rsquo;)=(R,s+ex)$, where $x$ is an arbitrary number, would
+be valid for a public key $P&rsquo;=P+xG$ and message $m$. Let&rsquo;s look at
+why:</p><p>$$
 \begin{align}
-&e = H(R || m) \\<br>
-&s&rsquo;G=R+eP' \iff (s+ex)G=R+e(P+xG) \iff \\<br>
-&sG+exG=R+eP+exG \iff sG=R+eP+exG-exG \iff \\<br>
-&sG=R+eP
+&amp;e = H(R || m) \\
+&amp;s&rsquo;G=R+eP&rsquo; \iff (s+ex)G=R+e(P+xG) \iff \\
+&amp;sG+exG=R+eP+exG \iff sG=R+eP+exG-exG \iff \\
+&amp;sG=R+eP
 \end{align}
-$$</p>
-<p>This is known as a related-key attack. If you&rsquo;re familiar with how
+$$</p><p>This is known as a related-key attack. If you&rsquo;re familiar with how
 extended public key derivation in
 <a href=https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki>BIP32</a>
 works, you might see the potential danger. For a refresher, here&rsquo;s the
-general idea:</p>
-<figure><img src=/post-data/schnorr-basics/xpub-derivation.svg class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" alt="Deriving a child extended public key from a parent extended public key, The orange paper strips are known as chain code, described in detail in Grokking Bitcoin. You just need to know that they&amp;rsquo;re 256-bit numbers." width=80% height=80%><figcaption>
-<p>
-<center>Deriving a child extended public key from a parent extended public key, The orange paper strips are known as chain code, described in detail in Grokking Bitcoin. You just need to know that they&rsquo;re 256-bit numbers.
-</center>
-</p>
-</figcaption>
-</figure>
-<p>This means that if an attacker knows the parent extended public key
+general idea:</p><figure><img src=/post-data/schnorr-basics/xpub-derivation.svg class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" alt="Deriving a child extended public key from a parent extended public key, The orange paper strips are known as chain code, described in detail in Grokking Bitcoin. You just need to know that they&amp;rsquo;re 256-bit numbers." width=80% height=80%><figcaption><p><center>Deriving a child extended public key from a parent extended public key, The orange paper strips are known as chain code, described in detail in Grokking Bitcoin. You just need to know that they&rsquo;re 256-bit numbers.</center></p></figcaption></figure><p>This means that if an attacker knows the parent extended public key
 (xpub), and a valid signature for a child key, then the attacker can
 use this trick to forge signatures for the parent xpub, as well as any
 child xpubs that can be derived from the parent xpub. This is a
@@ -324,79 +176,16 @@ problem not only for BIP32, but for many schemes using public key
 addition somehow, for example, Taproot
 (<a href=https://github.com/bitcoin/bips/blob/master/bip-0341.mediawiki#constructing-and-spending-taproot-outputs>BIP341</a>). For
 a bit more details, please visit
-<a href=https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki#Design>the Design section of BIP340</a>.</p>
-<h2 id=next-steps>Next steps</h2>
-<p>In the next post, I&rsquo;ll show how Schnorr signatures can be used in a
+<a href=https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki#Design>the Design section of BIP340</a>.</p><h2 id=next-steps>Next steps</h2><p>In the next post, I&rsquo;ll show how Schnorr signatures can be used in a
 multisignature setting to produce a signature that looks just like a
 normal single signature. This is very practical in Bitcoin because it
-reduces resource requirements for verifying the blockchain.</p>
-<p><em>This is a cross-post from <a href=https://popeller.io/schnorr-basics>my personal blog</a>.</em></p>
-</section>
-<section>
-<noscript>
-<div class="alert alert-warning" role=alert>
-Enable JavaScript to view comments.
-Comments are hosted on GitHub with <a href=https://utteranc.es/>utteranc.es</a>.
-</div>
-</noscript>
-<script src=https://utteranc.es/client.js repo=dev-bitcoin/blog-comments issue-term=title label=Comments theme=preferred-color-scheme crossorigin=anonymous async></script>
-</section>
-<section class="text-muted small">
-All text and images in this work are licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative Commons Attribution-ShareAlike 4.0 International License</a>
-<a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=https://i.creativecommons.org/l/by-sa/4.0/80x15.png></a>
-</section>
-</div>
-</div>
-</article>
-<section>
-<div class=row>
-<div class=col-lg>
-<h4 class=mt-4>Previous</h4>
-<div class="card mb-4 border-0 rounded shadow-sm">
-<div class="row row-cols-1 row-cols-md-2">
-<div class="col col-md-4">
-<img src=/post-data/compact-block-filters/cover.png style=object-fit:cover;height:100% class="card-img shadow-sm rounded" alt="Image for Compact Block Filters Deep Dive (BIP 158)">
-<a class="stretched-link umami--click--card-img-compact-block-filters-deep-dive-bip-158" href=/blog/bip158-deep-dive/></a>
-</div>
-<div class="col col-md-8">
-<div class=card-body>
-<small class=text-muted>
-published November 13, 2021
-by
-Elle Mouton
-</small>
-<h4 class=card-title>Compact Block Filters Deep Dive (BIP 158)
-</h4>
-<p class=card-text>
-In this post, I will briefly describe the needs of a bitcoin light client and why compact block filters satisfy these needs better than Bloom filters do. Then I will dive into exactly how compact block filters work and will follow this with a step-by-step guide for constructing such a filter from a …
-</p>
-</div>
-<a class="stretched-link umami--click--card-text-compact-block-filters-deep-dive-bip-158" href=/blog/bip158-deep-dive/></a>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-</div><footer class="container text-center my-3">
-<div class=my-3>
-<a rel=me href=https://twitter.com/bitcoindevblog class="m-2 image-to-invert umami--click--footer-twitter">
-<img src=/img/footer/twitter.svg alt="logo twitter" height=32px>
-</a>
-<a rel=me href=https://github.com/dev-bitcoin class="m-2 image-to-invert umami--click--footer-github">
-<img src=/img/footer/github.svg alt="logo github" height=32px>
-</a>
-<a href=/feed.xml class="m-2 image-to-invert umami--click--footer-rss-feed">
-<img src=/img/footer/rss.svg alt="logo rss" height=32px>
-</a>
-<a href=mailto:contact[at]bitcoin-dev.blog class="m-2 image-to-invert umami--click--footer-gmail">
-<img src=/img/footer/gmail.svg alt="logo mail" height=32px>
-</a>
-</div>
-<span class="small text-muted">
-This page uses a self-hosted <a href=https://umami.is class=umami--click--footer-umamiis>umami.is</a> instance as privacy-friendly visitor counter.
-The statistics are pubicly accessible <a href=https://umami.b10c.me/share/hwUBMhXc/bitcoin-dev-blog class=umami--click--footer-stats>here</a>.
-</span>
-</footer>
-</body>
-</html>
+reduces resource requirements for verifying the blockchain.</p><p><em>This is a cross-post from <a href=https://popeller.io/schnorr-basics>my personal blog</a>.</em></p></section><section><noscript><div class="alert alert-warning" role=alert>Enable JavaScript to view comments.
+Comments are hosted on GitHub with <a href=https://utteranc.es/>utteranc.es</a>.</div></noscript><script src=https://utteranc.es/client.js repo=dev-bitcoin/blog-comments issue-term=title label=Comments theme=preferred-color-scheme crossorigin=anonymous async></script></section><section class="text-muted small">All text and images in this work are licensed under a <a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/>Creative Commons Attribution-ShareAlike 4.0 International License</a>
+<a rel=license href=http://creativecommons.org/licenses/by-sa/4.0/><img alt="Creative Commons License" style=border-width:0 src=https://i.creativecommons.org/l/by-sa/4.0/80x15.png></a></section></div></div></article><section><div class=row><div class=col-lg><h4 class=mt-4>Next</h4><div class="card mb-4 border-0 rounded shadow-sm"><div class="row no-gutters"><div class=col-12><img src=/post-data/the-end/header.png style=object-fit:cover;height:100% class="card-img shadow-sm" alt="Image for The End">
+<a class="stretched-link umami--click--card-sm-img-the-end" href=/blog/the-end/></a></div><div class=col-12><div class=card-body><small class=text-muted>January 1, 2024</small><h4 class=card-title>The End</h4><p class=card-text><p>The bitcoin-dev.blog will be discontinued later this year.</p></p></div><a class="stretched-link umami--click--card-sm-text-the-end" href=/blog/the-end/></a></div></div></div></div><div class=col-lg><h4 class=mt-4>Previous</h4><div class="card mb-4 border-0 rounded shadow-sm"><div class="row no-gutters"><div class=col-12><img src=/post-data/compact-block-filters/cover.png style=object-fit:cover;height:100% class="card-img shadow-sm" alt="Image for Compact Block Filters Deep Dive (BIP 158)">
+<a class="stretched-link umami--click--card-sm-img-compact-block-filters-deep-dive-bip-158" href=/blog/bip158-deep-dive/></a></div><div class=col-12><div class=card-body><small class=text-muted>November 13, 2021</small><h4 class=card-title>Compact Block Filters Deep Dive (BIP 158)</h4><p class=card-text>In this post, I will briefly describe the needs of a bitcoin light client and why compact block filters satisfy these needs better than Bloom filters do. Then I will dive into exactly how compact block filters work and will follow this with a step-by-step guide for constructing such a filter from a testnet block.
+The purpose of block filters A bitcoin light client is software that can back a bitcoin wallet without storing the blockchain.</p></div><a class="stretched-link umami--click--card-sm-text-compact-block-filters-deep-dive-bip-158" href=/blog/bip158-deep-dive/></a></div></div></div></div></div></section></div><footer class="container text-center my-3"><div class=my-3><a rel=me href=https://twitter.com/bitcoindevblog class="m-2 image-to-invert umami--click--footer-twitter"><img src=/img/footer/twitter.svg alt="logo twitter" height=32px></a>
+<a rel=me href=https://github.com/dev-bitcoin class="m-2 image-to-invert umami--click--footer-github"><img src=/img/footer/github.svg alt="logo github" height=32px></a>
+<a href=/feed.xml class="m-2 image-to-invert umami--click--footer-rss-feed"><img src=/img/footer/rss.svg alt="logo rss" height=32px></a>
+<a href=mailto:contact[at]bitcoin-dev.blog class="m-2 image-to-invert umami--click--footer-gmail"><img src=/img/footer/gmail.svg alt="logo mail" height=32px></a></div><span class="small text-muted">This page uses a self-hosted <a href=https://umami.is class=umami--click--footer-umamiis>umami.is</a> instance as privacy-friendly visitor counter.
+The statistics are pubicly accessible <a href=https://umami.b10c.me/share/hwUBMhXc/bitcoin-dev-blog class=umami--click--footer-stats>here</a>.</span></footer></body></html>
