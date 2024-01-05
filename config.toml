@@ -1,4 +1,4 @@
-baseURL = "https://bitcoin-dev.blog"
+baseURL = "https://bitcoin-dev.github.io/blog"
 languageCode = "en-us"
 title = "bitcoin-dev blog"
 
