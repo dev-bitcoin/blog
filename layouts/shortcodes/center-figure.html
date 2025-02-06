@@ -4,7 +4,7 @@
     {{- if .Get "link" -}}
         <a href="{{ .Get "link" }}"{{ with .Get "target" }} target="{{ . }}"{{ end }}{{ with .Get "rel" }} rel="{{ . }}"{{ end }}>
     {{- end -}}
-    <img src="{{ .Get "src" }}" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded"
+    <img src="{{ relURL ""}}{{ .Get "src" }}" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded"
          {{- if or (.Get "alt") (.Get "caption") }}
          alt="{{ with .Get "alt" }}{{ . }}{{ else }}{{ .Get "caption" | markdownify| plainify }}{{ end }}"
          {{- end -}}
