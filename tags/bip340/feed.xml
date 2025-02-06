@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>BIP340 on bitcoin-dev blog</title><link>https://bitcoin-dev.blog/tags/bip340/</link><description>Recent content in BIP340 on bitcoin-dev blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 03 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bitcoin-dev.blog/tags/bip340/feed.xml" rel="self" type="application/rss+xml"/><item><title>Schnorr basics</title><link>https://bitcoin-dev.blog/blog/schnorr-basics/</link><pubDate>Mon, 03 Jan 2022 00:00:00 +0000</pubDate><guid>https://bitcoin-dev.blog/blog/schnorr-basics/</guid><description>&lt;p>If you&amp;rsquo;re having a difficult time wrapping your head around Schnorr
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>BIP340 on bitcoin-dev blog</title><link>https://bitcoin-dev.github.io/blog/tags/bip340/</link><description>Recent content in BIP340 on bitcoin-dev blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 03 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://bitcoin-dev.github.io/blog/tags/bip340/feed.xml" rel="self" type="application/rss+xml"/><item><title>Schnorr basics</title><link>https://bitcoin-dev.github.io/blog/blog/schnorr-basics/</link><pubDate>Mon, 03 Jan 2022 00:00:00 +0000</pubDate><guid>https://bitcoin-dev.github.io/blog/blog/schnorr-basics/</guid><description>&lt;p>If you&amp;rsquo;re having a difficult time wrapping your head around Schnorr
 signatures, you&amp;rsquo;re not alone. In this post, I attempt to explain
 Schnorr signatures at a level that I myself appreciate, and
 hopefully, you&amp;rsquo;ll find it valuable too.&lt;/p>
@@ -9,7 +9,7 @@ taproot upgrade. Schnorr has some nice properties listed in
 &lt;h2 id="signing-and-verifying">Signing and verifying&lt;/h2>
 &lt;p>A signature scheme consists of two actions, signing and verification
 as the following diagram shows.&lt;/p>
-&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/schnorr-basics/sig-overview.svg" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded"
+&lt;figure>&lt;img src="https://bitcoin-dev.github.io/blog//post-data/schnorr-basics/sig-overview.svg" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded"
 alt="Left side: signing using a message and a private key. Right side: verification that the message (the cat) was signed with the correct private key." width="80%" height="80%"/>&lt;figcaption>
 &lt;p>
 &lt;center>Left side: signing using a message and a private key. Right side: verification that the message (the cat) was signed with the correct private key.
@@ -223,8 +223,8 @@ extended public key derivation in
 &lt;a href="https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki">BIP32&lt;/a>
 works, you might see the potential danger. For a refresher, here&amp;rsquo;s the
 general idea:&lt;/p>
-&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/schnorr-basics/xpub-derivation.svg" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded"
-alt="Deriving a child extended public key from a parent extended public key, The orange paper strips are known as chain code, described in detail in Grokking Bitcoin. You just need to know that they&amp;amp;rsquo;re 256-bit numbers." width="80%" height="80%"/>&lt;figcaption>
+&lt;figure>&lt;img src="https://bitcoin-dev.github.io/blog//post-data/schnorr-basics/xpub-derivation.svg" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded"
+alt="Deriving a child extended public key from a parent extended public key, The orange paper strips are known as chain code, described in detail in Grokking Bitcoin. You just need to know that they&amp;rsquo;re 256-bit numbers." width="80%" height="80%"/>&lt;figcaption>
 &lt;p>
 &lt;center>Deriving a child extended public key from a parent extended public key, The orange paper strips are known as chain code, described in detail in Grokking Bitcoin. You just need to know that they&amp;rsquo;re 256-bit numbers.
 &lt;/center>

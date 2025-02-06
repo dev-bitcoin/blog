@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>USDT tracepoints on bitcoin-dev blog</title><link>https://bitcoin-dev.blog/tags/usdt-tracepoints/</link><description>Recent content in USDT tracepoints on bitcoin-dev blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 30 Aug 2021 09:00:00 +0200</lastBuildDate><atom:link href="https://bitcoin-dev.blog/tags/usdt-tracepoints/feed.xml" rel="self" type="application/rss+xml"/><item><title>Userspace, Statically Defined Tracing support for Bitcoin Core</title><link>https://bitcoin-dev.blog/blog/bitcoin-core-usdt-support/</link><pubDate>Mon, 30 Aug 2021 09:00:00 +0200</pubDate><guid>https://bitcoin-dev.blog/blog/bitcoin-core-usdt-support/</guid><description>&lt;p>&lt;em>This report updates on what 0xB10C, &lt;a href="https://blog.coinbase.com/announcing-our-first-bitcoin-core-developer-grants-3d88559db068">Coinbase Crypto Community Fund grant recipient&lt;/a>,
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>USDT Tracepoints on bitcoin-dev blog</title><link>https://bitcoin-dev.github.io/blog/tags/usdt-tracepoints/</link><description>Recent content in USDT Tracepoints on bitcoin-dev blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 30 Aug 2021 09:00:00 +0200</lastBuildDate><atom:link href="https://bitcoin-dev.github.io/blog/tags/usdt-tracepoints/feed.xml" rel="self" type="application/rss+xml"/><item><title>Userspace, Statically Defined Tracing support for Bitcoin Core</title><link>https://bitcoin-dev.github.io/blog/blog/bitcoin-core-usdt-support/</link><pubDate>Mon, 30 Aug 2021 09:00:00 +0200</pubDate><guid>https://bitcoin-dev.github.io/blog/blog/bitcoin-core-usdt-support/</guid><description>&lt;p>&lt;em>This report updates on what 0xB10C, &lt;a href="https://blog.coinbase.com/announcing-our-first-bitcoin-core-developer-grants-3d88559db068">Coinbase Crypto Community Fund grant recipient&lt;/a>,
 has been working on over the first half of his year-long Bitcoin development grant.
 This specifically covers his work on Userspace, Statically Defined Tracing support
 for Bitcoin Core. This report was published on &lt;a href="https://b10c.me/blog/008-bitcoin-core-usdt-support/">0xB10Cs blog&lt;/a> and the &lt;a href="https://blog.coinbase.com/userspace-statically-defined-tracing-support-for-bitcoin-core-e4076cd3e07">Coinbase blog&lt;/a> too.&lt;/em>&lt;/p>
@@ -14,7 +14,6 @@ and benchmark changes. Researchers want to observe and analyze the behavior
 of nodes on the peer-to-peer network. Exchanges and other services handling
 large sums of bitcoin want to detect attacks and other anomalies early.&lt;/p>
 &lt;h3 id="peeking-inside-with-userspace-statically-defined-tracing">Peeking inside with Userspace, Statically Defined Tracing&lt;/h3>
-&lt;!-- raw HTML omitted -->
 &lt;p>The &lt;a href="https://ebpf.io">eBPF&lt;/a> technology present in the Linux kernel can be used for
 observability into userspace applications. The technology allows
 running a small, sandboxed program in the Linux kernel, which can hook
@@ -26,7 +25,6 @@ userspace applications is known as Userspace, Statically Defined Tracing
 (USDT). For example, these tracepoints are also included in PostgreSQL,
 MySQL, Python, NodeJS, Ruby, PHP, and libraries like libc, libpthread,
 and libvirt.&lt;/p>
-&lt;!-- raw HTML omitted -->
 &lt;p>The static tracepoints can be leveraged by Bitcoin Core users wishing for
 more insights into their node. Adding USDT support &lt;a href="https://github.com/bitcoin/bitcoin/pull/19866">did not require intrusive
 changes&lt;/a>, and no custom tooling had to be written. When not used, the performance
@@ -34,7 +32,6 @@ impact of the tracepoints is minimal to non-existent. Only privileged processes
 can hook into the tracepoints, no information leaks to other processes on the host.
 These properties make Userspace, Statically Defined Tracing a good fit for Bitcoin
 Core.&lt;/p>
-&lt;!-- raw HTML omitted -->
 &lt;p>For example, I &lt;a href="https://github.com/bitcoin/bitcoin/commit/4224dec22baa66547303840707cf1d4f15a49b20">placed two tracepoints&lt;/a> in the peer-to-peer message handling
 code of Bitcoin Core. For each inbound and outbound P2P message, the tracepoints
 pass information about the peer, the connection, and the message. This data can
@@ -42,7 +39,7 @@ be filtered and processed by tracing scripts. As a demo, I have built a P2P Moni
 that shows the communication between two peers in real-time. Users can find this
 script alongside other &lt;a href="https://github.com/bitcoin/bitcoin/tree/master/contrib/tracing">USDT examples&lt;/a> in the &lt;code>contrib/tracing/&lt;/code> directory of the
 Bitcoin Core repository.&lt;/p>
-&lt;blockquote class="twitter-tweet" data-dnt="true">&lt;p lang="en" dir="ltr">Realtime Bitcoin Core P2P monitoring with User-Space, Statically Defined Tracing (USDT) and eBPF.&lt;br>&lt;br>This is one of the examples from &lt;a href="https://t.co/1QGb7jgsnZ">https://t.co/1QGb7jgsnZ&lt;/a> (with added IP masking). &lt;a href="https://t.co/E5mREYknEm">pic.twitter.com/E5mREYknEm&lt;/a>&lt;/p>&amp;mdash; 0xB10C (@0xB10C) &lt;a href="https://twitter.com/0xB10C/status/1396889721859715077?ref_src=twsrc%5Etfw">May 24, 2021&lt;/a>&lt;/blockquote>
+&lt;blockquote class="twitter-tweet" data-dnt="true">&lt;p lang="en" dir="ltr">Realtime Bitcoin Core P2P monitoring with User-Space, Statically Defined Tracing (USDT) and eBPF.&lt;br>&lt;br>This is one of the examples from &lt;a href="https://t.co/1QGb7jgsnZ">https://t.co/1QGb7jgsnZ&lt;/a> (with added IP masking). &lt;a href="https://t.co/E5mREYknEm">pic.twitter.com/E5mREYknEm&lt;/a>&lt;/p>&amp;mdash; b10c (@0xB10C) &lt;a href="https://twitter.com/0xB10C/status/1396889721859715077?ref_src=twsrc%5Etfw">May 24, 2021&lt;/a>&lt;/blockquote>
 &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8">&lt;/script>
 &lt;h3 id="use-cases-for-userspace-statically-defined-tracing">Use-cases for Userspace, Statically Defined Tracing&lt;/h3>
 &lt;p>I list some use-cases for Userspace, Statically Defined Tracing
@@ -72,9 +69,8 @@ with other data.&lt;/p>
 &lt;p>Additionally, these addrman tracepoints can be helpful during debugging and
 code review. To showcase this, I build a tool that visualizes the addresses
 in the addrman data structure based on the data submitted to the tracepoints.&lt;/p>
-&lt;blockquote class="twitter-tweet" data-dnt="true">&lt;p lang="en" dir="ltr">Quiz: Which Bitcoin Core data-structure does this visualization show? &lt;a href="https://t.co/U6cnHBFWWT">pic.twitter.com/U6cnHBFWWT&lt;/a>&lt;/p>&amp;mdash; 0xB10C (@0xB10C) &lt;a href="https://twitter.com/0xB10C/status/1407019872681332742?ref_src=twsrc%5Etfw">June 21, 2021&lt;/a>&lt;/blockquote>
+&lt;blockquote class="twitter-tweet" data-dnt="true">&lt;p lang="en" dir="ltr">Quiz: Which Bitcoin Core data-structure does this visualization show? &lt;a href="https://t.co/U6cnHBFWWT">pic.twitter.com/U6cnHBFWWT&lt;/a>&lt;/p>&amp;mdash; b10c (@0xB10C) &lt;a href="https://twitter.com/0xB10C/status/1407019872681332742?ref_src=twsrc%5Etfw">June 21, 2021&lt;/a>&lt;/blockquote>
 &lt;script async src="https://platform.twitter.com/widgets.js" charset="utf-8">&lt;/script>
-&lt;!-- raw HTML omitted -->
 &lt;p>A Prometheus metric exporter can also build on top of the tracepoints
 without requiring additional code in Bitcoin Core. There already exist
 RPC-based Prometheus exporters and projects like &lt;a href="https://statoshi.info/">Statoshi&lt;/a>. However,

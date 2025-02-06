@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>BIP158 on bitcoin-dev blog</title><link>https://bitcoin-dev.blog/tags/bip158/</link><description>Recent content in BIP158 on bitcoin-dev blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 13 Nov 2021 09:32:00 +0200</lastBuildDate><atom:link href="https://bitcoin-dev.blog/tags/bip158/feed.xml" rel="self" type="application/rss+xml"/><item><title>Compact Block Filters Deep Dive (BIP 158)</title><link>https://bitcoin-dev.blog/blog/bip158-deep-dive/</link><pubDate>Sat, 13 Nov 2021 09:32:00 +0200</pubDate><guid>https://bitcoin-dev.blog/blog/bip158-deep-dive/</guid><description>&lt;p>In this post, I will briefly describe the needs of a bitcoin light client and
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>BIP158 on bitcoin-dev blog</title><link>https://bitcoin-dev.github.io/blog/tags/bip158/</link><description>Recent content in BIP158 on bitcoin-dev blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 13 Nov 2021 09:32:00 +0200</lastBuildDate><atom:link href="https://bitcoin-dev.github.io/blog/tags/bip158/feed.xml" rel="self" type="application/rss+xml"/><item><title>Compact Block Filters Deep Dive (BIP 158)</title><link>https://bitcoin-dev.github.io/blog/blog/bip158-deep-dive/</link><pubDate>Sat, 13 Nov 2021 09:32:00 +0200</pubDate><guid>https://bitcoin-dev.github.io/blog/blog/bip158-deep-dive/</guid><description>&lt;p>In this post, I will briefly describe the needs of a bitcoin light client and
 why compact block filters satisfy these needs better than Bloom filters do. Then
 I will dive into exactly how compact block filters work and will follow this
 with a step-by-step guide for constructing such a filter from a testnet block.&lt;/p>
@@ -69,8 +69,8 @@ much much smaller than the block.&lt;/li>
 &lt;p>The info included in the basic filter is: every transaction&amp;rsquo;s input&amp;rsquo;s
 scriptPubKey being spent and every transaction&amp;rsquo;s output&amp;rsquo;s scriptPubKey being
 created. So something like this:&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">objects&lt;/span> = {&lt;span style="color:#a6e22e">spk1&lt;/span>, &lt;span style="color:#a6e22e">spk2&lt;/span>, &lt;span style="color:#a6e22e">spk3&lt;/span>, &lt;span style="color:#a6e22e">spk4&lt;/span>, &lt;span style="color:#f92672">...&lt;/span>, &lt;span style="color:#a6e22e">spkN&lt;/span>} &lt;span style="color:#75715e">// A list of N scriptPubKeys.
-&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Technically we could just stop here and say this list of scriptPubKeys is our
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">objects&lt;/span> = {&lt;span style="color:#a6e22e">spk1&lt;/span>, &lt;span style="color:#a6e22e">spk2&lt;/span>, &lt;span style="color:#a6e22e">spk3&lt;/span>, &lt;span style="color:#a6e22e">spk4&lt;/span>, &lt;span style="color:#f92672">...&lt;/span>, &lt;span style="color:#a6e22e">spkN&lt;/span>} &lt;span style="color:#75715e">// A list of N scriptPubKeys.&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Technically we could just stop here and say this list of scriptPubKeys is our
 filter. It is a condensed version of what is in the blockchain and contains the
 info the light client needs. With this list, they could tell with 100% certainty
 if something they are interested in is in the block. But it is still pretty big.
@@ -84,7 +84,7 @@ hashing-plus-convert-to-number function we use will take each object and produce
 a number in the space from [0, 10]. It is uniformly distributed in this space.
 That means that, after ordering them, we will get (in the very, very ideal case)
 something like this:&lt;/p>
-&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/compact-block-filters/dense.jpeg" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="250" height="250"/>
+&lt;figure>&lt;img src="https://bitcoin-dev.github.io/blog//post-data/compact-block-filters/dense.jpeg" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="250" height="250"/>
 &lt;/figure>
 &lt;p>First of all, wow that is so great cause we have drastically decreased the size
 of an objects fingerprint. Each one is just a number now. Ok so, let this be
@@ -100,7 +100,7 @@ filter is 1. This is no good. We have lost too much info on our quest to
 compress the data in the filter. What we need is a higher false-positive (fp)
 rate. Ok so let’s say we want a false positive rate of 5. Then what we want is
 to have our objects be mapped uniformly to a space of [0, 50]:&lt;/p>
-&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/compact-block-filters/sparse.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="250" height="250"/>
+&lt;figure>&lt;img src="https://bitcoin-dev.github.io/blog//post-data/compact-block-filters/sparse.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="250" height="250"/>
 &lt;/figure>
 &lt;p>This is starting to look a bit better. If I am a client downloading this filter
 and I check if my objects are maybe in the filter, there will be a 1/5 chance
@@ -133,7 +133,7 @@ use more bits to encode larger, unlikely quotients. Then we also need to encode
 the remainders (since we want to be able to reconstruct the values exactly), and
 these will always be numbers between [0, M-1] (in our case, [0, 4]). For
 encoding the quotients, we use the following mapping:&lt;/p>
-&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/compact-block-filters/quotient.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="125" height="125"/>
+&lt;figure>&lt;img src="https://bitcoin-dev.github.io/blog//post-data/compact-block-filters/quotient.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="125" height="125"/>
 &lt;/figure>
 &lt;p>The mapping above is easy to read: The number of &lt;code>1&lt;/code>s indicates the quotient we
 are encoding, and the &lt;code>0&lt;/code> indicates the end of the quotient encoding. So for each
@@ -141,7 +141,7 @@ number in our list, we encode the quotient using the above table, and then we
 convert the remainder to binary using the number of bits needed to encode the
 maximum of M-1. In our case, that is 3 bits. Here is a table showing the
 encoding of the possible remainders in our example:&lt;/p>
-&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/compact-block-filters/remainder.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="125" height="125"/>
+&lt;figure>&lt;img src="https://bitcoin-dev.github.io/blog//post-data/compact-block-filters/remainder.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="125" height="125"/>
 &lt;/figure>
 &lt;p>So, in our ideal case example, our list of &lt;code>[0, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5]&lt;/code>
 can be encoded as follows:&lt;/p>
@@ -176,14 +176,14 @@ pseudo code snippets here. The beef of the code is the function called
 &lt;code>constructFilter&lt;/code>, which takes in a bitcoin client that can be used to make calls
 to bitcoind and the block in question. The function looks something like this:&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">func&lt;/span> &lt;span style="color:#a6e22e">constructFilter&lt;/span>(&lt;span style="color:#a6e22e">bc&lt;/span> &lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">bitcoind&lt;/span>.&lt;span style="color:#a6e22e">Bitcoind&lt;/span>, &lt;span style="color:#a6e22e">block&lt;/span> &lt;span style="color:#a6e22e">bitcoind&lt;/span>.&lt;span style="color:#a6e22e">Block&lt;/span>) ([]&lt;span style="color:#66d9ef">byte&lt;/span>, &lt;span style="color:#66d9ef">error&lt;/span>) {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 1. Collect all the objects from the block that we want to add to the filter
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 2. Convert all the objects to numbers and sort them.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 3. Get the differences between the sorted numbers
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 4. Encode these differences using Golomb-Rice Coding
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>}
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 1. Collect all the objects from the block that we want to add to the filter&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 2. Convert all the objects to numbers and sort them. &lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 3. Get the differences between the sorted numbers&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// 4. Encode these differences using Golomb-Rice Coding&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Ok so step 1 is to collect all the objects from the block that we want to add to
 the filter. From the BIP, we know that these objects are all the scriptPubKeys
 being spent as well as all the scriptPubKeys of each output. Some extra rules
@@ -191,39 +191,39 @@ from the BIP are that we skip the input for the coinbase transaction (since it
 is empty and meaningless), and we skip any OP_RETURN outputs. We also
 de-duplicate the data. So if there are two identical scriptPubKeys, we only
 include one in the filter.&lt;/p>
-&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// The list of objects we want to include in our filter. These will be
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// every scriptPubKey being spent as well as each output&amp;#39;s scriptPubKey.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// We use a map so that we can dedup any duplicate scriptPubKeys.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">objects&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make(&lt;span style="color:#66d9ef">map&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span>] &lt;span style="color:#66d9ef">struct&lt;/span>{})
+&lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// The list of objects we want to include in our filter. These will be&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// every scriptPubKey being spent as well as each output&amp;#39;s scriptPubKey.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// We use a map so that we can dedup any duplicate scriptPubKeys.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">objects&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make(&lt;span style="color:#66d9ef">map&lt;/span>[&lt;span style="color:#66d9ef">string&lt;/span>] &lt;span style="color:#66d9ef">struct&lt;/span>{})
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Loop over every transaction in the block.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span>, &lt;span style="color:#a6e22e">tx&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">block&lt;/span>.&lt;span style="color:#a6e22e">Tx&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Loop over every transaction in the block.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span>, &lt;span style="color:#a6e22e">tx&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">block&lt;/span>.&lt;span style="color:#a6e22e">Tx&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Add the scriptPubKey of each of the transaction&amp;#39;s outputs
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// and add those to our list of objects.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">txOut&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">tx&lt;/span>.&lt;span style="color:#a6e22e">Vout&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Add the scriptPubKey of each of the transaction&amp;#39;s outputs&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// and add those to our list of objects.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">txOut&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">tx&lt;/span>.&lt;span style="color:#a6e22e">Vout&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">scriptPubKey&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">txOut&lt;/span>.&lt;span style="color:#a6e22e">ScriptPubKey&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> len(&lt;span style="color:#a6e22e">scriptPubKey&lt;/span>) &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">continue&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// We don&amp;#39;t add the output if it is an OP_RETURN (0x6a).
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">spk&lt;/span>[&lt;span style="color:#ae81ff">0&lt;/span>] &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0x6a&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// We don&amp;#39;t add the output if it is an OP_RETURN (0x6a).&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">spk&lt;/span>[&lt;span style="color:#ae81ff">0&lt;/span>] &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0x6a&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">continue&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">objects&lt;/span>[&lt;span style="color:#a6e22e">skpStr&lt;/span>] = &lt;span style="color:#66d9ef">struct&lt;/span>{}{}
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// We don&amp;#39;t add the inputs of the coinbase transaction.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// We don&amp;#39;t add the inputs of the coinbase transaction.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">continue&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// For each input, go and fetch the scriptPubKey that it is
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// spending.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">txIn&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">tx&lt;/span>.&lt;span style="color:#a6e22e">Vin&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// For each input, go and fetch the scriptPubKey that it is&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// spending.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">txIn&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">tx&lt;/span>.&lt;span style="color:#a6e22e">Vin&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">prevTx&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">bc&lt;/span>.&lt;span style="color:#a6e22e">GetRawTransaction&lt;/span>(&lt;span style="color:#a6e22e">txIn&lt;/span>.&lt;span style="color:#a6e22e">Txid&lt;/span>)
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span>
@@ -256,21 +256,21 @@ we sort the list in ascending order, and then we also create a new list called
 the sorted &lt;code>numbers&lt;/code> list.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">numbers&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make([]&lt;span style="color:#66d9ef">uint64&lt;/span>, &lt;span style="color:#ae81ff">0&lt;/span>, &lt;span style="color:#a6e22e">N&lt;/span>)
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Iterate over all the objects, convert them to numbers lying uniformly in the
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// range [0, F] and add them to the `numbers` list.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">o&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">objects&lt;/span> {
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Using the given key, max number (F) and object bytes (o),
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// convert the object to a number between 0 and F.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">v&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">convertToNumber&lt;/span>(&lt;span style="color:#a6e22e">b&lt;/span>, &lt;span style="color:#a6e22e">F&lt;/span>, &lt;span style="color:#a6e22e">key&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Iterate over all the objects, convert them to numbers lying uniformly in the &lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// range [0, F] and add them to the `numbers` list.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">o&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">objects&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Using the given key, max number (F) and object bytes (o),&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// convert the object to a number between 0 and F.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">v&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">convertToNumber&lt;/span>(&lt;span style="color:#a6e22e">b&lt;/span>, &lt;span style="color:#a6e22e">F&lt;/span>, &lt;span style="color:#a6e22e">key&lt;/span>)
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">numbers&lt;/span> = append(&lt;span style="color:#a6e22e">numbers&lt;/span>, &lt;span style="color:#a6e22e">v&lt;/span>)
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Sort the numbers.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">sort&lt;/span>.&lt;span style="color:#a6e22e">Slice&lt;/span>(&lt;span style="color:#a6e22e">numbers&lt;/span>, &lt;span style="color:#66d9ef">func&lt;/span>(&lt;span style="color:#a6e22e">i&lt;/span>, &lt;span style="color:#a6e22e">j&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>) &lt;span style="color:#66d9ef">bool&lt;/span> { &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">numbers&lt;/span>[&lt;span style="color:#a6e22e">i&lt;/span>] &amp;lt; &lt;span style="color:#a6e22e">numbers&lt;/span>[&lt;span style="color:#a6e22e">j&lt;/span>] })
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Sort the numbers.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">sort&lt;/span>.&lt;span style="color:#a6e22e">Slice&lt;/span>(&lt;span style="color:#a6e22e">numbers&lt;/span>, &lt;span style="color:#66d9ef">func&lt;/span>(&lt;span style="color:#a6e22e">i&lt;/span>, &lt;span style="color:#a6e22e">j&lt;/span> &lt;span style="color:#66d9ef">int&lt;/span>) &lt;span style="color:#66d9ef">bool&lt;/span> { &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">numbers&lt;/span>[&lt;span style="color:#a6e22e">i&lt;/span>] &amp;lt; &lt;span style="color:#a6e22e">numbers&lt;/span>[&lt;span style="color:#a6e22e">j&lt;/span>] })
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Convert the list of numbers to a list of differences.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#a6e22e">differences&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make([]&lt;span style="color:#66d9ef">uint64&lt;/span>, &lt;span style="color:#a6e22e">N&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// Convert the list of numbers to a list of differences.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">differences&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> make([]&lt;span style="color:#66d9ef">uint64&lt;/span>, &lt;span style="color:#a6e22e">N&lt;/span>)
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span>, &lt;span style="color:#a6e22e">num&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">numbers&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">==&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">differences&lt;/span>[&lt;span style="color:#a6e22e">i&lt;/span>] = &lt;span style="color:#a6e22e">num&lt;/span>
@@ -281,7 +281,7 @@ the sorted &lt;code>numbers&lt;/code> list.&lt;/p>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>}
 &lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>Awesome! Here is a graph showing the values in the &lt;code>numbers&lt;/code> and &lt;code>differences&lt;/code>
 lists:&lt;/p>
-&lt;figure>&lt;img src="https://bitcoin-dev.blog/post-data/compact-block-filters/bitcoinExample.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="600" height="600"/>
+&lt;figure>&lt;img src="https://bitcoin-dev.github.io/blog//post-data/compact-block-filters/bitcoinExample.png" class="img img-fluid d-block mx-auto figure-center-img p-3 rounded" width="600" height="600"/>
 &lt;/figure>
 &lt;p>As you can see, the 85 numbers are really nicely uniformly distributed across
 the space! And this results in the values in the &lt;code>differences&lt;/code> list being pretty
@@ -300,14 +300,14 @@ is divided by 2^19 to get the quotient and remainder and the remainder is then
 encoded in binary in 19 bits.&lt;/p>
 &lt;div class="highlight">&lt;pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;">&lt;code class="language-go" data-lang="go">&lt;span style="display:flex;">&lt;span>&lt;span style="color:#a6e22e">filter&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">bstream&lt;/span>.&lt;span style="color:#a6e22e">NewBStreamWriter&lt;/span>(&lt;span style="color:#ae81ff">0&lt;/span>)
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// For each number in the differences list, calculate the quotient and
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// remainder after dividing by 2^P.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">d&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">differences&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// For each number in the differences list, calculate the quotient and&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">// remainder after dividing by 2^P.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">_&lt;/span>, &lt;span style="color:#a6e22e">d&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#66d9ef">range&lt;/span> &lt;span style="color:#a6e22e">differences&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">q&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">math&lt;/span>.&lt;span style="color:#a6e22e">Floor&lt;/span>(float64(&lt;span style="color:#a6e22e">d&lt;/span>)&lt;span style="color:#f92672">/&lt;/span>&lt;span style="color:#a6e22e">math&lt;/span>.&lt;span style="color:#a6e22e">Exp2&lt;/span>(float64(&lt;span style="color:#a6e22e">P&lt;/span>)))
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">r&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">d&lt;/span> &lt;span style="color:#f92672">-&lt;/span> uint64(&lt;span style="color:#a6e22e">math&lt;/span>.&lt;span style="color:#a6e22e">Exp2&lt;/span>(float64(&lt;span style="color:#a6e22e">P&lt;/span>))&lt;span style="color:#f92672">*&lt;/span>&lt;span style="color:#a6e22e">q&lt;/span>)
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Encode the quotient.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>; &lt;span style="color:#a6e22e">i&lt;/span> &amp;lt; int(&lt;span style="color:#a6e22e">q&lt;/span>); &lt;span style="color:#a6e22e">i&lt;/span>&lt;span style="color:#f92672">++&lt;/span> {
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Encode the quotient.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">for&lt;/span> &lt;span style="color:#a6e22e">i&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#ae81ff">0&lt;/span>; &lt;span style="color:#a6e22e">i&lt;/span> &amp;lt; int(&lt;span style="color:#a6e22e">q&lt;/span>); &lt;span style="color:#a6e22e">i&lt;/span>&lt;span style="color:#f92672">++&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">filter&lt;/span>.&lt;span style="color:#a6e22e">WriteBit&lt;/span>(&lt;span style="color:#66d9ef">true&lt;/span>)
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">filter&lt;/span>.&lt;span style="color:#a6e22e">WriteBit&lt;/span>(&lt;span style="color:#66d9ef">false&lt;/span>)
@@ -350,11 +350,11 @@ numbers:&lt;/p>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#66d9ef">for&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Read a quotient from the stream. Read until we encounter
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// a &amp;#39;0&amp;#39; bit indicating the end of the quotient. The number of
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// &amp;#39;1&amp;#39;s we encounter before reaching the &amp;#39;0&amp;#39; defines the
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#75715e">// quotient.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">q&lt;/span> &lt;span style="color:#66d9ef">uint64&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// Read a quotient from the stream. Read until we encounter&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// a &amp;#39;0&amp;#39; bit indicating the end of the quotient. The number of &lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// &amp;#39;1&amp;#39;s we encounter before reaching the &amp;#39;0&amp;#39; defines the &lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// quotient.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">var&lt;/span> &lt;span style="color:#a6e22e">q&lt;/span> &lt;span style="color:#66d9ef">uint64&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">c&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span>.&lt;span style="color:#a6e22e">ReadBit&lt;/span>()
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">return&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span>
@@ -370,8 +370,8 @@ numbers:&lt;/p>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> }
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>
-&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// The following P bits are the remainder encoded as binary.
-&lt;/span>&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span>&lt;span style="color:#75715e">&lt;/span> &lt;span style="color:#a6e22e">r&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span>.&lt;span style="color:#a6e22e">ReadBits&lt;/span>(&lt;span style="color:#a6e22e">P&lt;/span>)
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#75715e">// The following P bits are the remainder encoded as binary.&lt;/span>
+&lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#a6e22e">r&lt;/span>, &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">:=&lt;/span> &lt;span style="color:#a6e22e">b&lt;/span>.&lt;span style="color:#a6e22e">ReadBits&lt;/span>(&lt;span style="color:#a6e22e">P&lt;/span>)
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">errors&lt;/span>.&lt;span style="color:#a6e22e">Is&lt;/span>(&lt;span style="color:#a6e22e">err&lt;/span>, &lt;span style="color:#a6e22e">io&lt;/span>.&lt;span style="color:#a6e22e">EOF&lt;/span>) {
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> &lt;span style="color:#66d9ef">break&lt;/span>
 &lt;/span>&lt;/span>&lt;span style="display:flex;">&lt;span> } &lt;span style="color:#66d9ef">else&lt;/span> &lt;span style="color:#66d9ef">if&lt;/span> &lt;span style="color:#a6e22e">err&lt;/span> &lt;span style="color:#f92672">!=&lt;/span> &lt;span style="color:#66d9ef">nil&lt;/span> {
