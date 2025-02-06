@@ -2,7 +2,7 @@
   <div class="row no-gutters">
     <div class="col-12">
       {{ if .Params.images }}
-      <img src="{{index ( .Params.images ) 0}}" style="object-fit: cover; height: 100%;" class="card-img shadow-sm" alt="Image for {{.Title}}">
+      <img src="{{ relURL ""}}{{index ( .Params.images ) 0}}" style="object-fit: cover; height: 100%;" class="card-img shadow-sm" alt="Image for {{.Title}}">
       {{ end }}
       <a class="stretched-link umami--click--card-sm-img-{{.Title | urlize}}" href="{{.RelPermalink}}"></a>
     </div>
