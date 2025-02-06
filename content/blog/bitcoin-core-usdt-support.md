@@ -80,7 +80,7 @@ that shows the communication between two peers in real-time. Users can find this
 script alongside other [USDT examples] in the `contrib/tracing/` directory of the
 Bitcoin Core repository.
 
-{{< tweet 1396889721859715077 >}}
+{{< tweet user="0xb10c" id="1396889721859715077" >}}
 
 [placed two tracepoints]: https://github.com/bitcoin/bitcoin/commit/4224dec22baa66547303840707cf1d4f15a49b20
 [USDT examples]: https://github.com/bitcoin/bitcoin/tree/master/contrib/tracing
@@ -124,7 +124,7 @@ Additionally, these addrman tracepoints can be helpful during debugging and
 code review. To showcase this, I build a tool that visualizes the addresses
 in the addrman data structure based on the data submitted to the tracepoints.
 
-{{< tweet 1407019872681332742 >}}
+{{< tweet user="0xb10c" id="1407019872681332742" >}}
 
 [Eclipse Attacks]: https://cs-people.bu.edu/heilman/eclipse/
 

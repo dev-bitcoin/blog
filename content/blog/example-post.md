@@ -121,10 +121,10 @@ We can include footnotes[^this-is-a-footnote-ref] by using `[^ref]` where `ref` 
 Hugo offers a built-in tweet shortcode too.
 
 ```
-{{</* tweet 1110302988 */>}}
+{{</* tweet user="halfin" id=1110302988 */>}}
 ```
 
-{{< tweet 1110302988 >}}
+{{< tweet user="halfin" id=1110302988 >}}
 
 
 #### Videos
