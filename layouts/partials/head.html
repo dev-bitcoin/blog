@@ -11,12 +11,12 @@
       {{ printf `<link rel="%s" type="%s" href="%s" title="%s" />` .Rel .MediaType.Type .Permalink $.Site.Title | safeHTML }}
     {{ end -}}
 
-    <link rel="stylesheet" href="/css/bootstrap.min.css"
+    <link rel="stylesheet" href="{{ relURL "css"}}/bootstrap.min.css"
       integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="/css/syntax.css">
-    <link rel="stylesheet" href="/css/index.css">
-    <link rel="shortcut icon" href="/favicon.png" type="image/png">
-    <link rel="icon" href="/favicon.png" type="image/png">
+    <link rel="stylesheet" href="{{ relURL "css"}}/syntax.css">
+    <link rel="stylesheet" href="{{ relURL "css"}}/index.css">
+    <link rel="shortcut icon" href="{{ relURL ""}}/favicon.png" type="image/png">
+    <link rel="icon" href="{{ relURL ""}}/favicon.png" type="image/png">
 
     {{ if not .Site.IsServer }}
     <!-- self-hosted, privacy friendly, and GDPR compliant visitor stats -->
